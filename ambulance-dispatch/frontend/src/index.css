@@ -1,0 +1,155 @@
+/*
+ * Global CSS foundation for the React application.
+ *
+ * Vite's starter project normally includes styles that center the
+ * entire React application in the browser:
+ *
+ *     body {
+ *       display: flex;
+ *       place-items: center;
+ *     }
+ *
+ * Those starter styles are useful for the Vite demonstration page,
+ * but they are not appropriate for a full-width dispatch system.
+ *
+ * This file removes those defaults and establishes a predictable page
+ * foundation for every role-based screen.
+ */
+
+/*
+ * Applies border-box sizing to every element.
+ *
+ * With border-box:
+ *
+ *     final width = declared width
+ *
+ * Padding and borders are included inside that width instead of making
+ * the element larger than expected.
+ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/*
+ * Gives the browser page and React root element the full available
+ * width and minimum viewport height.
+ *
+ * This prevents the application from collapsing into a narrow centered
+ * column like the screen shown previously.
+ */
+html,
+body,
+#root {
+  width: 100%;
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+}
+
+/*
+ * Establishes the global page appearance.
+ *
+ * Important correction:
+ *
+ * display: flex and place-items: center are intentionally absent.
+ * The React application should control its own layout instead of being
+ * centered by the body element.
+ */
+body {
+  min-height: 100vh;
+  margin: 0;
+
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  background: #eef2f7;
+  color: #172033;
+
+  /*
+   * Improves font rendering on supported browsers.
+   */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/*
+ * Ensures the React root fills the browser width.
+ *
+ * Vite's original starter CSS may use:
+ *
+ *     max-width: 1280px;
+ *     margin: 0 auto;
+ *     padding: 2rem;
+ *     text-align: center;
+ *
+ * None of those restrictions belong on the complete application root.
+ */
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/*
+ * Removes default heading and paragraph spacing from the global reset
+ * only where individual components will define their own spacing.
+ *
+ * We do not remove every margin globally because readable content still
+ * benefits from normal document spacing.
+ */
+h1,
+h2,
+h3,
+h4,
+p {
+  overflow-wrap: break-word;
+}
+
+/*
+ * Makes buttons, inputs, selects, and text areas use the same font as
+ * the rest of the application.
+ */
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+/*
+ * Gives buttons an appropriate pointer cursor.
+ *
+ * Disabled buttons receive the default cursor because they cannot be
+ * activated.
+ */
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+/*
+ * Prevents images from overflowing their containers.
+ */
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+/*
+ * Gives links their inherited text color unless a component provides a
+ * more specific link style.
+ */
+a {
+  color: inherit;
+}

@@ -1,0 +1,2759 @@
+/*
+ * ================================================================
+ * AUTHENTICATED ROLE WORKSPACE
+ * ================================================================
+ *
+ * These styles control the application after a seeded user logs in.
+ *
+ * The authenticated interface contains:
+ *
+ * 1. A top application header.
+ * 2. A role-specific navigation sidebar.
+ * 3. A main workspace area.
+ * 4. A footer.
+ *
+ * App.jsx determines which navigation options and screens are shown
+ * according to the logged-in user's role.
+ */
+
+/*
+ * Ensures the authenticated application fills the complete browser
+ * viewport.
+ *
+ * The flex-column layout allows:
+ *
+ * - the header to remain at the top;
+ * - the workspace to expand and fill available space;
+ * - the footer to remain beneath the workspace.
+ */
+.authenticated-app {
+  min-height: 100vh;
+  background: #eef2f7;
+}
+
+/*
+ * Main header shown after a user logs in.
+ *
+ * The left side contains the project title and description.
+ * The right side contains the user information and logout button.
+ */
+.workspace-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2rem;
+
+  padding:
+    2rem
+    clamp(1.25rem, 4vw, 4rem);
+
+  border-bottom: 4px solid #d63447;
+
+  background:
+    linear-gradient(
+      135deg,
+      #10213a 0%,
+      #173553 55%,
+      #20496d 100%
+    );
+
+  color: #ffffff;
+}
+
+/*
+ * Main application title inside the authenticated header.
+ *
+ * The width is limited so the title and user-session information can
+ * remain beside one another on wide screens.
+ */
+.workspace-header h1 {
+  max-width: 850px;
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size: clamp(1.8rem, 3vw, 2.9rem);
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+}
+
+/*
+ * Container holding the logged-in user's name, role, and logout button.
+ */
+.user-session {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  flex-shrink: 0;
+
+  padding: 0.8rem;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.18);
+
+  border-radius: 14px;
+
+  background:
+    rgba(255, 255, 255, 0.08);
+}
+
+/*
+ * Groups the user's name and role vertically.
+ */
+.user-session-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+
+  min-width: 140px;
+}
+
+/*
+ * Logged-in user's display name.
+ */
+.user-name {
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+/*
+ * User's assigned role.
+ */
+.user-role {
+  color: #bcd1e8;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/*
+ * Secondary action button used for logout and other less prominent
+ * operations.
+ */
+.secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 40px;
+  padding: 0.6rem 1rem;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.35);
+
+  border-radius: 9px;
+
+  background:
+    rgba(255, 255, 255, 0.1);
+
+  color: #ffffff;
+
+  font-size: 0.88rem;
+  font-weight: 700;
+
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    transform 150ms ease;
+}
+
+/*
+ * Hover state for the logout button.
+ */
+.secondary-button:hover {
+  border-color:
+    rgba(255, 255, 255, 0.65);
+
+  background:
+    rgba(255, 255, 255, 0.18);
+
+  transform: translateY(-1px);
+}
+
+/*
+ * Keyboard-focus indicator for the logout button.
+ */
+.secondary-button:focus-visible {
+  outline:
+    3px solid
+    rgba(159, 197, 255, 0.45);
+
+  outline-offset: 3px;
+}
+
+/*
+ * Main two-column authenticated workspace.
+ *
+ * The first column is the role-navigation sidebar.
+ * The second column is the active screen content.
+ *
+ * minmax(0, 1fr) prevents wide child content from forcing the entire
+ * page beyond the browser width.
+ */
+.workspace-layout {
+  display: grid;
+  grid-template-columns:
+    280px
+    minmax(0, 1fr);
+
+  flex: 1;
+
+  width: 100%;
+  min-height: 0;
+}
+
+/*
+ * Left navigation sidebar.
+ *
+ * The sidebar remains visually separate from the main workspace through
+ * its right border and light background.
+ */
+.role-sidebar {
+  display: flex;
+  flex-direction: column;
+
+  min-height: 100%;
+
+  padding: 1.5rem 1rem;
+
+  border-right: 1px solid #d7dee8;
+
+  background: #ffffff;
+}
+
+/*
+ * Summary of the current user's role.
+ */
+.role-summary {
+  padding: 0.5rem 0.5rem 1.4rem;
+
+  border-bottom: 1px solid #e1e7ef;
+}
+
+/*
+ * Role name displayed in the sidebar.
+ */
+.role-summary h2 {
+  margin: 0.35rem 0 0;
+
+  color: #172033;
+
+  font-size: 1.35rem;
+  line-height: 1.25;
+}
+
+/*
+ * Role-description paragraph.
+ */
+.role-summary p:last-child {
+  margin: 0.75rem 0 0;
+
+  color: #68778c;
+
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+/*
+ * Navigation list containing only the screens assigned to the current
+ * user's role.
+ */
+.role-navigation {
+  display: grid;
+  gap: 0.45rem;
+
+  padding: 1.25rem 0;
+}
+
+/*
+ * One role-navigation button.
+ *
+ * Buttons are used instead of ordinary text so each entry is keyboard
+ * accessible and can trigger React state changes.
+ */
+.navigation-button {
+  width: 100%;
+
+  padding: 0.8rem 0.9rem;
+
+  border: 1px solid transparent;
+  border-radius: 9px;
+
+  background: transparent;
+  color: #42536b;
+
+  font-size: 0.9rem;
+  font-weight: 650;
+  text-align: left;
+
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    transform 150ms ease;
+}
+
+/*
+ * Hover state for a navigation screen that is not currently active.
+ */
+.navigation-button:hover {
+  border-color: #dbe5ef;
+  background: #f4f8fc;
+  color: #173d68;
+
+  transform: translateX(2px);
+}
+
+/*
+ * Active navigation screen.
+ *
+ * The active class is added by App.jsx when:
+ *
+ *     screen.path === currentPath
+ */
+.navigation-button.active {
+  border-color: #b9cee3;
+  background: #e7f0f8;
+  color: #123f6c;
+
+  box-shadow:
+    inset 4px 0 0 #286aa6;
+}
+
+/*
+ * Keyboard-focus indicator for role-navigation buttons.
+ */
+.navigation-button:focus-visible {
+  outline:
+    3px solid
+    rgba(47, 109, 176, 0.22);
+
+  outline-offset: 2px;
+}
+
+/*
+ * Permission count displayed at the bottom of the sidebar.
+ *
+ * margin-top: auto pushes this section toward the bottom when the
+ * sidebar is taller than its navigation contents.
+ */
+.role-permission-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+
+  margin-top: auto;
+  padding: 1rem 0.7rem;
+
+  border-top: 1px solid #e1e7ef;
+
+  color: #6b788c;
+
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+/*
+ * Large number showing how many frontend permissions the current role
+ * has.
+ */
+.role-permission-summary strong {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 2.2rem;
+  height: 2.2rem;
+
+  border-radius: 50%;
+
+  background: #173d68;
+  color: #ffffff;
+
+  font-size: 0.88rem;
+}
+
+/*
+ * Main workspace area where the currently selected screen is rendered.
+ */
+.workspace-content {
+  min-width: 0;
+
+  padding:
+    1.75rem
+    clamp(1rem, 3vw, 3rem)
+    3rem;
+
+  background: #eef2f7;
+}
+
+/*
+ * Header displayed above the active role screen.
+ *
+ * It shows:
+ *
+ * - the current role;
+ * - the selected screen name;
+ * - frontend connection status.
+ */
+.screen-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+
+  margin-bottom: 1.5rem;
+  padding: 1.2rem 1.4rem;
+
+  border: 1px solid #d8e0e9;
+  border-radius: 14px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 7px 22px
+    rgba(30, 46, 72, 0.06);
+}
+
+/*
+ * Active-screen title.
+ */
+.screen-header h2 {
+  margin: 0.3rem 0 0;
+
+  color: #172033;
+
+  font-size: clamp(1.4rem, 2vw, 1.9rem);
+}
+
+/*
+ * Changes the connection-status badge when it appears on the light
+ * authenticated workspace instead of the dark application header.
+ */
+.screen-header .connection-status {
+  border-color: #d0dce8;
+  background: #f4f8fc;
+  color: #314862;
+}
+
+/*
+ * Container for the complete dispatcher dashboard.
+ */
+.role-dashboard {
+  display: grid;
+  gap: 1.5rem;
+}
+
+/*
+ * Prevents a dashboard panel nested inside role-dashboard from receiving
+ * unnecessary bottom spacing.
+ *
+ * The role-dashboard grid already provides spacing between children.
+ */
+.role-dashboard > .panel {
+  margin-bottom: 0;
+}
+
+/*
+ * Placeholder screen used for role-authorized pages that have not yet
+ * received their final forms, tables, or API integration.
+ */
+.workspace-placeholder {
+  min-height: 420px;
+}
+
+/*
+ * Gives placeholder empty-state sections more vertical room so the
+ * screen does not appear unfinished or collapsed.
+ */
+.workspace-placeholder .empty-state {
+  min-height: 340px;
+}
+
+/*
+ * ================================================================
+ * RESPONSIVE AUTHENTICATED WORKSPACE
+ * ================================================================
+ */
+
+/*
+ * Tablet and smaller-laptop layout.
+ *
+ * The navigation sidebar becomes narrower while enough horizontal room
+ * remains for the main application.
+ */
+@media (max-width: 1100px) {
+  .workspace-layout {
+    grid-template-columns:
+      230px
+      minmax(0, 1fr);
+  }
+
+  .role-sidebar {
+    padding-right: 0.75rem;
+    padding-left: 0.75rem;
+  }
+}
+
+/*
+ * Narrow tablet layout.
+ *
+ * The workspace changes from two columns to one column.
+ * Navigation becomes a horizontal wrapping menu above the content.
+ */
+@media (max-width: 850px) {
+  .workspace-header {
+    flex-direction: column;
+  }
+
+  .user-session {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .workspace-layout {
+    display: block;
+  }
+
+  .role-sidebar {
+    min-height: auto;
+
+    padding: 1rem;
+
+    border-right: 0;
+    border-bottom: 1px solid #d7dee8;
+  }
+
+  .role-summary {
+    padding-bottom: 1rem;
+  }
+
+  .role-navigation {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+
+    padding-bottom: 0.5rem;
+  }
+
+  .navigation-button {
+    width: auto;
+    flex: 1 1 170px;
+
+    text-align: center;
+  }
+
+  .navigation-button:hover {
+    transform: translateY(-1px);
+  }
+
+  .navigation-button.active {
+    box-shadow:
+      inset 0 -4px 0 #286aa6;
+  }
+
+  .role-permission-summary {
+    display: none;
+  }
+}
+
+/*
+ * Phone layout.
+ */
+@media (max-width: 600px) {
+  .workspace-header {
+    padding:
+      1.5rem
+      1rem;
+  }
+
+  .workspace-header h1 {
+    font-size: 1.75rem;
+  }
+
+  .user-session {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .secondary-button {
+    width: 100%;
+  }
+
+  .workspace-content {
+    padding:
+      1rem
+      0.75rem
+      2rem;
+  }
+
+  .screen-header {
+    align-items: flex-start;
+    flex-direction: column;
+
+    padding: 1rem;
+  }
+
+  .screen-header .connection-status {
+    align-self: flex-start;
+  }
+
+.role-navigation {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+  .navigation-button {
+    width: 100%;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;}
+}
+
+
+
+/*
+ * ================================================================
+ * LOGIN SCREEN — AUTHENTICATED WORKSPACE APPEARANCE
+ * ================================================================
+ *
+ * These rules override the earlier two-column login design.
+ *
+ * The login screen will now visually match the authenticated screens:
+ *
+ * 1. Dark blue application header across the top.
+ * 2. White navigation-style area on the left.
+ * 3. Light-gray workspace background on the right.
+ * 4. White login card inside the workspace.
+ * 5. Matching borders, spacing, typography, and shadows.
+ *
+ * No JSX changes are required.
+ */
+
+/*
+ * Changes the login page from the earlier side-by-side design into a
+ * normal full-page vertical layout.
+ *
+ * The top section becomes the dark application header.
+ * The bottom section becomes the login workspace.
+ */
+.login-page {
+  display: block;
+  width: 100%;
+  min-height: 100vh;
+  background: #eef2f7;
+}
+
+/*
+ * Converts the former left-side information section into the same dark
+ * blue header used by the authenticated application.
+ */
+.login-information {
+  display: block;
+  min-height: auto;
+
+  padding:
+    2rem
+    clamp(1.25rem, 4vw, 3.25rem);
+
+  border-bottom: 4px solid #d63447;
+
+  background:
+    linear-gradient(
+      135deg,
+      #10213a 0%,
+      #173553 55%,
+      #20496d 100%
+    );
+
+  color: #ffffff;
+}
+
+/*
+ * Styles the small ICS 240 label above the title.
+ */
+.login-information .eyebrow {
+  margin: 0 0 1rem;
+
+  color: #a9ccff;
+
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/*
+ * Makes the login-page heading match the authenticated application
+ * heading shown after login.
+ */
+.login-information h1 {
+  max-width: 850px;
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+}
+
+/*
+ * Styles the supporting text underneath the application title.
+ */
+.login-introduction {
+  max-width: 780px;
+  margin: 1rem 0 0;
+
+  color: #d8e6f6;
+
+  font-size: 0.95rem;
+  line-height: 1.65;
+}
+
+/*
+ * Hides the three large feature cards from the original login layout.
+ *
+ * The authenticated workspace screenshot uses a cleaner header with
+ * only the application title and description.
+ *
+ * The underlying JSX may remain unchanged.
+ */
+.login-feature-list {
+  display: none;
+}
+
+/*
+ * Creates the area beneath the dark header.
+ *
+ * The section uses a two-column grid:
+ *
+ *     230px sidebar | remaining workspace width
+ *
+ * A CSS-generated sidebar is used because the current LoginPage JSX
+ * does not contain a separate sidebar element.
+ */
+.login-form-section {
+  position: relative;
+
+  display: grid;
+  grid-template-columns:
+    230px
+    minmax(0, 1fr);
+
+  align-items: start;
+  justify-content: stretch;
+
+  width: 100%;
+  min-height: calc(100vh - 225px);
+
+  padding: 0;
+
+  background: #eef2f7;
+}
+
+/*
+ * Creates the white development-login sidebar.
+ *
+ * This pseudo-element is visual only. The real login controls remain
+ * inside the form on the right side.
+ */
+.login-form-section::before {
+  content:
+    "Development Login\A\A"
+    "Select a seeded user from the dropdown to open that role's authorized workspace.";
+
+  grid-column: 1;
+  grid-row: 1;
+
+  align-self: stretch;
+
+  min-height: calc(100vh - 225px);
+
+  padding:
+    2.4rem
+    1.25rem;
+
+  border-right: 1px solid #d7dee8;
+
+  background: #ffffff;
+  color: #65758a;
+
+  font-size: 0.88rem;
+  line-height: 1.55;
+
+  white-space: pre-line;
+}
+
+/*
+ * Styles the first line of the generated sidebar through stronger text
+ * weight inherited from the sidebar block.
+ *
+ * Because pseudo-element content cannot contain separate HTML elements,
+ * the complete sidebar remains one text block.
+ */
+.login-form-section::before {
+  font-weight: 500;
+}
+
+/*
+ * Positions the login form inside the main workspace column.
+ *
+ * The form becomes a large dashboard-style white panel instead of a
+ * small floating login box.
+ */
+.login-form {
+  grid-column: 2;
+  grid-row: 1;
+
+  width: auto;
+  max-width: none;
+
+  margin:
+    1.5rem
+    clamp(1rem, 3vw, 3rem)
+    3rem;
+
+  padding: 0;
+
+  overflow: hidden;
+
+  border: 1px solid #d8e0e9;
+  border-radius: 14px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 8px 24px
+    rgba(30, 46, 72, 0.07);
+}
+
+/*
+ * Formats the login-form heading like the white screen-header card in
+ * the authenticated workspace.
+ */
+.login-form-header {
+  margin: 0;
+  padding: 1.5rem 1.6rem;
+
+  border-bottom: 1px solid #e1e7ef;
+
+  background: #ffffff;
+}
+
+/*
+ * Formats the login form's main heading.
+ */
+.login-form-header h2 {
+  margin: 0.35rem 0 0;
+
+  color: #172033;
+
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  line-height: 1.2;
+}
+
+/*
+ * Styles the supporting paragraph below the login heading.
+ */
+.login-form-header p:last-child {
+  max-width: 700px;
+  margin: 0.75rem 0 0;
+
+  color: #65758a;
+
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+/*
+ * Adds workspace-like spacing around the account-selection field.
+ */
+.login-form .form-field {
+  margin: 0;
+  padding:
+    1.5rem
+    1.6rem
+    0;
+}
+
+/*
+ * Styles the dropdown label.
+ */
+.login-form .form-field label {
+  color: #263950;
+
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+/*
+ * Makes the seeded-user dropdown larger and easier to read.
+ */
+.login-form .form-field select {
+  width: 100%;
+  min-height: 50px;
+
+  padding:
+    0.75rem
+    0.9rem;
+
+  border: 1px solid #bdc8d6;
+  border-radius: 9px;
+
+  background: #ffffff;
+  color: #172033;
+
+  outline: none;
+
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+/*
+ * Provides an accessible focus indicator when the user selects the
+ * dropdown through the keyboard or mouse.
+ */
+.login-form .form-field select:focus {
+  border-color: #286aa6;
+
+  box-shadow:
+    0 0 0 4px
+    rgba(40, 106, 166, 0.14);
+}
+
+/*
+ * Displays the selected person's name, role, description, and screen
+ * count in a dashboard information box.
+ */
+.login-form .selected-role-summary {
+  display: grid;
+  gap: 0.55rem;
+
+  margin:
+    1.5rem
+    1.6rem;
+
+  padding: 1.25rem;
+
+  border: 1px solid #ccdbea;
+  border-radius: 10px;
+
+  background: #f4f8fc;
+}
+
+/*
+ * Selected user's name.
+ */
+.login-form .selected-role-summary strong {
+  color: #153f6b;
+
+  font-size: 1.05rem;
+}
+
+/*
+ * Role information inside the selected-user summary.
+ */
+.login-form .selected-role-summary p {
+  margin: 0;
+
+  color: #53657c;
+
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/*
+ * Authorized-screen count.
+ */
+.login-form .selected-role-summary span {
+  margin-top: 0.25rem;
+
+  color: #286397;
+
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/*
+ * Styles the login button like the primary dashboard action.
+ */
+.login-form .primary-button {
+  width: calc(100% - 3.2rem);
+  min-height: 48px;
+
+  margin:
+    0
+    1.6rem;
+
+  padding:
+    0.8rem
+    1.25rem;
+
+  border: 0;
+  border-radius: 9px;
+
+  background: #173d68;
+  color: #ffffff;
+
+  font-weight: 700;
+
+  transition:
+    background-color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
+}
+
+/*
+ * Login-button hover state.
+ */
+.login-form .primary-button:hover:not(:disabled) {
+  background: #245784;
+
+  box-shadow:
+    0 8px 20px
+    rgba(23, 61, 104, 0.22);
+
+  transform: translateY(-1px);
+}
+
+/*
+ * Keyboard-focus indicator for the login button.
+ */
+.login-form .primary-button:focus-visible {
+  outline:
+    3px solid
+    rgba(40, 106, 166, 0.3);
+
+  outline-offset: 3px;
+}
+
+/*
+ * Styles the development-authentication warning at the bottom of the
+ * white login panel.
+ */
+.login-form .development-warning {
+  margin:
+    1rem
+    1.6rem
+    1.6rem;
+
+  color: #7a8798;
+
+  font-size: 0.78rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/*
+ * ================================================================
+ * RESPONSIVE LOGIN WORKSPACE
+ * ================================================================
+ */
+
+/*
+ * Removes the left sidebar on tablets and smaller screens.
+ *
+ * The login form then fills the available width.
+ */
+@media (max-width: 850px) {
+  .login-form-section {
+    display: block;
+    min-height: auto;
+  }
+
+  .login-form-section::before {
+    display: none;
+  }
+
+  .login-form {
+    width: auto;
+
+    margin:
+      1rem
+      1rem
+      2.5rem;
+  }
+}
+
+/*
+ * Reduces spacing and heading sizes on phones.
+ */
+@media (max-width: 600px) {
+  .login-information {
+    padding:
+      1.5rem
+      1rem;
+  }
+
+  .login-information h1 {
+    font-size: 1.8rem;
+  }
+
+  .login-introduction {
+    font-size: 0.88rem;
+  }
+
+  .login-form {
+    margin:
+      0.75rem
+      0.75rem
+      2rem;
+
+    border-radius: 10px;
+  }
+
+  .login-form-header,
+  .login-form .form-field {
+    padding-right: 1rem;
+    padding-left: 1rem;
+  }
+
+  .login-form .selected-role-summary {
+    margin-right: 1rem;
+    margin-left: 1rem;
+  }
+
+  .login-form .primary-button {
+    width: calc(100% - 2rem);
+
+    margin-right: 1rem;
+    margin-left: 1rem;
+  }
+
+  .login-form .development-warning {
+    margin-right: 1rem;
+    margin-left: 1rem;
+  }
+}
+
+
+/*
+ * ================================================================
+ * AMBULANCE CREW CURRENT-ASSIGNMENT SCREEN
+ * ================================================================
+ *
+ * These styles support the CrewAssignmentScreen component.
+ *
+ * The screen is designed to work on:
+ *
+ * - desktop monitors;
+ * - laptop computers;
+ * - tablets;
+ * - iPads;
+ * - large mobile phones;
+ * - small mobile phones.
+ *
+ * The main content contains:
+ *
+ * 1. Quick assignment statistics.
+ * 2. Emergency-call information.
+ * 3. A responsive coordinate map.
+ * 4. Ambulance and destination markers.
+ * 5. A visual route between both locations.
+ */
+
+/*
+ * Main wrapper around the complete ambulance-crew assignment screen.
+ *
+ * The grid gap creates consistent spacing between:
+ *
+ * - the quick statistics;
+ * - the details panel;
+ * - the navigation map.
+ */
+.crew-assignment-screen {
+  display: grid;
+  gap: 1.5rem;
+  width: 100%;
+  min-width: 0;
+}
+
+/*
+ * Prevents long status and ambulance names from becoming excessively
+ * large inside the existing statistic cards.
+ */
+.crew-assignment-screen .statistic-value {
+  font-size: clamp(1.3rem, 2.5vw, 2rem);
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+/*
+ * Main two-column crew layout.
+ *
+ * On desktop:
+ *
+ *     emergency details | route map
+ *
+ * minmax(0, 1fr) prevents either panel from forcing the page wider than
+ * the browser window.
+ */
+.crew-grid {
+  display: grid;
+  grid-template-columns:
+    minmax(320px, 0.8fr)
+    minmax(440px, 1.2fr);
+  gap: 1.5rem;
+  align-items: stretch;
+  min-width: 0;
+}
+
+/*
+ * Makes both main crew panels fill their grid area.
+ */
+.crew-grid > .panel {
+  min-width: 0;
+  margin: 0;
+}
+
+/*
+ * Inner content area used by both the emergency-information panel and
+ * map panel.
+ */
+.crew-panel-body {
+  padding: 1.4rem;
+}
+
+/*
+ * Container holding the labeled emergency-call fields.
+ */
+.crew-detail-list {
+  display: grid;
+  gap: 0;
+  border: 1px solid #dce4ed;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+/*
+ * One call-information row.
+ *
+ * Desktop layout:
+ *
+ *     label | value
+ */
+.crew-detail-item {
+  display: grid;
+  grid-template-columns:
+    minmax(130px, 0.35fr)
+    minmax(0, 0.65fr);
+  gap: 1rem;
+  align-items: start;
+  padding: 1rem;
+  border-bottom: 1px solid #e2e8ef;
+}
+
+/*
+ * Removes the divider beneath the final information row.
+ */
+.crew-detail-item:last-child {
+  border-bottom: 0;
+}
+
+/*
+ * Field label such as:
+ *
+ * - Caller
+ * - Priority
+ * - Destination
+ * - Dispatched At
+ */
+.crew-detail-label {
+  color: #607086;
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.055em;
+  line-height: 1.45;
+  text-transform: uppercase;
+}
+
+/*
+ * Value associated with the field label.
+ *
+ * overflow-wrap prevents long descriptions or destinations from
+ * creating horizontal scrolling.
+ */
+.crew-detail-value {
+  min-width: 0;
+  color: #1c2e47;
+  font-size: 0.92rem;
+  font-weight: 600;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+/*
+ * ================================================================
+ * CREW NAVIGATION MAP
+ * ================================================================
+ */
+
+/*
+ * Main map container.
+ *
+ * This is currently a coordinate-grid simulation rather than a live
+ * GPS map.
+ *
+ * The repeating gradients create horizontal and vertical grid lines.
+ * The map remains responsive because it uses width: 100%.
+ */
+.crew-map {
+  position: relative;
+  width: 100%;
+  min-height: 460px;
+  overflow: hidden;
+  border: 1px solid #aebfd0;
+  border-radius: 14px;
+  background-color: #eaf1f7;
+  background-image:
+    linear-gradient(
+      rgba(48, 88, 123, 0.11) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(48, 88, 123, 0.11) 1px,
+      transparent 1px
+    );
+  background-size:
+    10% 10%,
+    10% 10%;
+  box-shadow:
+    inset 0 0 30px
+    rgba(40, 65, 92, 0.08);
+}
+
+/*
+ * Creates a subtle directional background behind the route.
+ */
+.crew-map::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      circle at 15% 80%,
+      rgba(40, 106, 166, 0.14),
+      transparent 35%
+    ),
+    radial-gradient(
+      circle at 80% 20%,
+      rgba(211, 52, 71, 0.12),
+      transparent 35%
+    );
+}
+
+/*
+ * SVG layer containing the line between the ambulance and destination.
+ *
+ * The layer fills the complete map but does not intercept pointer
+ * interactions.
+ */
+.crew-map-line-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/*
+ * Route line connecting:
+ *
+ *     ambulance location -> emergency destination
+ *
+ * vector-effect keeps the line width visually consistent when the SVG
+ * scales for different devices.
+ */
+.crew-route-line {
+  fill: none;
+  stroke: #d63447;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-dasharray: 4 3;
+  vector-effect: non-scaling-stroke;
+}
+
+/*
+ * Shared positioning behavior for both map markers.
+ *
+ * translate(-50%, -50%) centers each marker on the calculated map
+ * coordinate instead of positioning its upper-left corner there.
+ */
+.crew-map-marker {
+  position: absolute;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  transform: translate(-50%, -50%);
+}
+
+/*
+ * Circular location marker shared by the ambulance and destination.
+ */
+.crew-map-pin {
+  position: relative;
+  display: block;
+  flex: 0 0 auto;
+  width: 1.35rem;
+  height: 1.35rem;
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  box-shadow:
+    0 3px 9px
+    rgba(18, 36, 63, 0.28);
+}
+
+/*
+ * Adds a larger transparent pulse around each marker.
+ */
+.crew-map-pin::after {
+  content: "";
+  position: absolute;
+  inset: -0.55rem;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  opacity: 0.25;
+}
+
+/*
+ * Blue marker showing the current ambulance position.
+ */
+.crew-map-marker-ambulance {
+  color: #1d68a5;
+}
+
+/*
+ * Ambulance marker fill.
+ */
+.crew-map-marker-ambulance .crew-map-pin {
+  background: #1d68a5;
+}
+
+/*
+ * Red marker showing the emergency destination.
+ */
+.crew-map-marker-destination {
+  color: #c72c3d;
+}
+
+/*
+ * Destination marker fill.
+ */
+.crew-map-marker-destination .crew-map-pin {
+  background: #c72c3d;
+}
+
+/*
+ * Text box displayed beside each map marker.
+ */
+.crew-map-label {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 130px;
+  max-width: 210px;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid rgba(22, 50, 78, 0.18);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow:
+    0 5px 14px
+    rgba(21, 43, 68, 0.15);
+  backdrop-filter: blur(4px);
+}
+
+/*
+ * Main map-marker label such as:
+ *
+ *     You are here
+ *     Go here
+ */
+.crew-map-label strong {
+  color: #183858;
+  font-size: 0.78rem;
+  line-height: 1.25;
+}
+
+/*
+ * Coordinates and unit information beneath the marker heading.
+ */
+.crew-map-label span {
+  color: #627288;
+  font-size: 0.68rem;
+  line-height: 1.35;
+}
+
+/*
+ * Map legend displayed beneath the coordinate map.
+ */
+.crew-map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem 1.5rem;
+  margin-top: 1rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid #d8e2ec;
+  border-radius: 10px;
+  background: #f7fafc;
+}
+
+/*
+ * One map-legend entry.
+ */
+.crew-map-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #53657b;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+/*
+ * Shared legend-dot size.
+ */
+.crew-map-legend-dot {
+  display: inline-block;
+  width: 0.75rem;
+  height: 0.75rem;
+  flex: 0 0 auto;
+  border-radius: 50%;
+}
+
+/*
+ * Blue dot for the ambulance location.
+ */
+.crew-map-legend-dot-ambulance {
+  background: #1d68a5;
+}
+
+/*
+ * Red dot for the emergency destination.
+ */
+.crew-map-legend-dot-destination {
+  background: #c72c3d;
+}
+
+/*
+ * ================================================================
+ * TABLET AND IPAD LAYOUT
+ * ================================================================
+ *
+ * The desktop sidebar may still be visible on larger iPads, but the
+ * crew details and map stack vertically when the content area becomes
+ * too narrow.
+ */
+@media (max-width: 1200px) {
+  .crew-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /*
+   * Gives the map enough height for comfortable tablet use.
+   */
+  .crew-map {
+    min-height: 520px;
+  }
+}
+
+/*
+ * iPad portrait and smaller tablet layout.
+ */
+@media (max-width: 850px) {
+  /*
+   * Statistics become two columns instead of attempting to fit all four
+   * cards onto one row.
+   */
+  .crew-assignment-screen .statistics-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .crew-map {
+    min-height: 460px;
+  }
+
+  /*
+   * Makes map labels slightly smaller so they fit comfortably inside
+   * portrait-oriented tablet screens.
+   */
+  .crew-map-label {
+    min-width: 115px;
+    max-width: 180px;
+  }
+}
+
+/*
+ * ================================================================
+ * MOBILE PHONE LAYOUT
+ * ================================================================
+ */
+@media (max-width: 600px) {
+  /*
+   * Statistics become one card per row for easy vertical scrolling.
+   */
+  .crew-assignment-screen .statistics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /*
+   * Reduces inner panel spacing to preserve usable screen width.
+   */
+  .crew-panel-body {
+    padding: 0.85rem;
+  }
+
+  /*
+   * Each detail becomes a vertical label/value pair.
+   *
+   * This prevents a narrow label column from squeezing long emergency
+   * descriptions.
+   */
+  .crew-detail-item {
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
+    padding: 0.9rem;
+  }
+
+  /*
+   * Provides a map that is tall enough to read but not excessively tall
+   * for phone scrolling.
+   */
+  .crew-map {
+    min-height: 390px;
+    border-radius: 10px;
+  }
+
+  /*
+   * On phones, map markers stack their labels beneath the pin rather
+   * than placing the text beside the marker.
+   */
+  .crew-map-marker {
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  /*
+   * Keeps labels compact enough for narrow mobile screens.
+   */
+  .crew-map-label {
+    min-width: 100px;
+    max-width: 135px;
+    padding: 0.45rem 0.5rem;
+    text-align: center;
+  }
+
+  .crew-map-label strong {
+    font-size: 0.7rem;
+  }
+
+  .crew-map-label span {
+    font-size: 0.6rem;
+  }
+
+  /*
+   * Stacks the legend entries vertically.
+   */
+  .crew-map-legend {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+  }
+}
+
+/*
+ * Very small phone layout.
+ */
+@media (max-width: 400px) {
+  .crew-map {
+    min-height: 350px;
+  }
+
+  /*
+   * Reduces the marker size slightly so it does not cover too much of
+   * the map on very small displays.
+   */
+  .crew-map-pin {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+
+  .crew-map-label {
+    min-width: 88px;
+    max-width: 110px;
+  }
+}
+
+
+
+
+
+
+/*
+ * ================================================================
+ * AMBULANCE CREW STATUS SCREEN
+ * ================================================================
+ *
+ * These styles support:
+ *
+ *     frontend/src/components/crew/CrewStatusScreen.jsx
+ *
+ * The lifecycle screen allows an ambulance crew to:
+ *
+ * 1. View the ambulance's current status.
+ * 2. View the active emergency call.
+ * 3. Select only legal lifecycle operations.
+ * 4. Review state changes performed during the browser session.
+ *
+ * The layout supports desktop computers, tablets, iPads, and mobile
+ * phones.
+ */
+
+/*
+ * Main wrapper around the complete crew lifecycle screen.
+ *
+ * The screen contains:
+ *
+ * - quick statistic cards;
+ * - lifecycle controls;
+ * - temporary transition history.
+ */
+.crew-status-screen {
+  display: grid;
+  gap: 1.5rem;
+  width: 100%;
+  min-width: 0;
+}
+
+/*
+ * Prevents long lifecycle values such as
+ * CLEANING_AND_RESTOCKING from overflowing a statistic card.
+ */
+.crew-status-screen .statistic-value {
+  font-size: clamp(1.25rem, 2.3vw, 2rem);
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+/*
+ * Main two-column lifecycle workspace.
+ *
+ * Desktop layout:
+ *
+ *     lifecycle controls | state-change history
+ *
+ * minmax(0, 1fr) prevents either panel from forcing the application
+ * beyond the width of the browser window.
+ */
+.crew-status-grid {
+  display: grid;
+  grid-template-columns:
+    minmax(360px, 1fr)
+    minmax(360px, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+  min-width: 0;
+}
+
+/*
+ * Removes unnecessary outside spacing from panels inside the status
+ * grid.
+ */
+.crew-status-grid > .panel {
+  min-width: 0;
+  margin: 0;
+}
+
+/*
+ * ================================================================
+ * CURRENT STATUS CARD
+ * ================================================================
+ */
+
+/*
+ * Displays the ambulance's current lifecycle state prominently above
+ * the available operation buttons.
+ */
+.current-status-card {
+  display: grid;
+  gap: 0.55rem;
+  margin-bottom: 1.25rem;
+  padding: 1.25rem;
+  border: 1px solid #cbd9e7;
+  border-radius: 12px;
+  background:
+    linear-gradient(
+      135deg,
+      #f4f8fc 0%,
+      #e9f2fa 100%
+    );
+}
+
+/*
+ * Small heading above the current lifecycle value.
+ */
+.current-status-label {
+  color: #5f7188;
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/*
+ * Large current lifecycle state.
+ *
+ * overflow-wrap allows long enum values to wrap instead of creating
+ * horizontal scrolling.
+ */
+.current-status-value {
+  color: #173d68;
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+/*
+ * Supporting explanation beneath the current status.
+ */
+.current-status-card p {
+  margin: 0;
+  color: #62748a;
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+/*
+ * ================================================================
+ * OPERATION RESULT MESSAGES
+ * ================================================================
+ */
+
+/*
+ * Shared structure for success and error messages displayed after a
+ * lifecycle operation.
+ */
+.crew-operation-message {
+  margin-bottom: 1.25rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 650;
+  line-height: 1.5;
+}
+
+/*
+ * Successful lifecycle transition.
+ */
+.crew-operation-message.success {
+  border-color: #9fd3b3;
+  background: #edf9f1;
+  color: #23663d;
+}
+
+/*
+ * Invalid or unavailable lifecycle operation.
+ */
+.crew-operation-message.error {
+  border-color: #e8a9b0;
+  background: #fff1f2;
+  color: #9d2431;
+}
+
+/*
+ * ================================================================
+ * LEGAL LIFECYCLE ACTIONS
+ * ================================================================
+ */
+
+/*
+ * Container holding every legal next operation for the current status.
+ */
+.crew-action-list {
+  display: grid;
+  gap: 1rem;
+}
+
+/*
+ * One legal lifecycle-operation card.
+ *
+ * Desktop layout places:
+ *
+ * - operation information on the left;
+ * - action button on the right.
+ */
+.crew-action-card {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto;
+  gap: 1.25rem;
+  align-items: center;
+  padding: 1.15rem;
+  border: 1px solid #d7e0ea;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow:
+    0 5px 15px
+    rgba(30, 46, 72, 0.05);
+}
+
+/*
+ * Operation heading.
+ */
+.crew-action-card h3 {
+  margin: 0;
+  color: #1c304b;
+  font-size: 1rem;
+  line-height: 1.3;
+}
+
+/*
+ * Operation explanation.
+ */
+.crew-action-card p {
+  margin: 0.55rem 0 0;
+  color: #68788d;
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+/*
+ * Displays the destination lifecycle state.
+ */
+.crew-action-card span {
+  display: inline-block;
+  margin-top: 0.65rem;
+  color: #316594;
+  font-size: 0.76rem;
+  font-weight: 750;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+}
+
+/*
+ * Overrides the default full-width primary button because action cards
+ * place their button beside the operation description on large screens.
+ */
+.crew-action-button {
+  width: auto;
+  min-width: 165px;
+  margin: 0;
+  white-space: normal;
+}
+
+/*
+ * Empty-state box displayed when the current ambulance state has no
+ * crew-controlled operation.
+ */
+.crew-no-actions {
+  padding: 2rem 1.25rem;
+  border: 1px dashed #bcc9d7;
+  border-radius: 12px;
+  background: #f8fafc;
+  text-align: center;
+}
+
+/*
+ * Empty-state heading.
+ */
+.crew-no-actions h3 {
+  margin: 0;
+  color: #293d57;
+  font-size: 1rem;
+}
+
+/*
+ * Empty-state explanation.
+ */
+.crew-no-actions p {
+  max-width: 500px;
+  margin: 0.7rem auto 0;
+  color: #718096;
+  font-size: 0.87rem;
+  line-height: 1.55;
+}
+
+/*
+ * ================================================================
+ * STATE-CHANGE HISTORY
+ * ================================================================
+ */
+
+/*
+ * Container holding temporary lifecycle-transition records.
+ */
+.crew-history-list {
+  display: grid;
+  gap: 0.85rem;
+}
+
+/*
+ * One lifecycle-history entry.
+ *
+ * The numbered circle appears on the left and the transition details
+ * appear on the right.
+ */
+.crew-history-entry {
+  display: grid;
+  grid-template-columns:
+    auto
+    minmax(0, 1fr);
+  gap: 0.85rem;
+  align-items: start;
+  padding: 1rem;
+  border: 1px solid #dbe3ec;
+  border-radius: 11px;
+  background: #ffffff;
+}
+
+/*
+ * Sequential transition number.
+ *
+ * Example:
+ *
+ *     1
+ *     2
+ *     3
+ */
+.crew-history-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: #173d68;
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 750;
+}
+
+/*
+ * Groups the transition, reason, and timestamp vertically.
+ */
+.crew-history-content {
+  display: grid;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+/*
+ * Main state transition.
+ *
+ * Example:
+ *
+ *     DISPATCHED → ON_SCENE
+ */
+.crew-history-content strong {
+  color: #1d334f;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+/*
+ * Human-readable operation reason.
+ */
+.crew-history-content span {
+  color: #607188;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+/*
+ * Time when the transition occurred.
+ */
+.crew-history-content time {
+  color: #8793a4;
+  font-size: 0.73rem;
+  line-height: 1.4;
+}
+
+/*
+ * ================================================================
+ * TABLET AND IPAD LAYOUT
+ * ================================================================
+ */
+
+/*
+ * Stack lifecycle controls and history when the available workspace
+ * becomes too narrow for two readable columns.
+ */
+@media (max-width: 1200px) {
+  .crew-status-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/*
+ * iPad portrait and smaller tablet layout.
+ */
+@media (max-width: 850px) {
+  /*
+   * Display two summary cards per row.
+   */
+  .crew-status-screen .statistics-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  /*
+   * Stack action content and the button vertically to provide larger
+   * touch targets.
+   */
+  .crew-action-card {
+    grid-template-columns: 1fr;
+  }
+
+  .crew-action-button {
+    width: 100%;
+  }
+}
+
+/*
+ * ================================================================
+ * MOBILE PHONE LAYOUT
+ * ================================================================
+ */
+
+@media (max-width: 600px) {
+  /*
+   * Display one statistic card per row.
+   */
+  .crew-status-screen .statistics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /*
+   * Reduce card spacing to preserve usable phone width.
+   */
+  .current-status-card {
+    padding: 1rem;
+  }
+
+  .crew-action-card {
+    padding: 1rem;
+  }
+
+  /*
+   * Keep action buttons tall enough for comfortable touch interaction.
+   */
+  .crew-action-button {
+    min-height: 52px;
+  }
+
+  /*
+   * Slightly reduce history-entry spacing on phones.
+   */
+  .crew-history-entry {
+    gap: 0.7rem;
+    padding: 0.85rem;
+  }
+
+  .crew-history-number {
+    width: 1.8rem;
+    height: 1.8rem;
+  }
+}
+
+/*
+ * Very small phone layout.
+ */
+@media (max-width: 400px) {
+  /*
+   * Stack the sequence number above the transition details when the
+   * device is extremely narrow.
+   */
+  .crew-history-entry {
+    grid-template-columns: 1fr;
+  }
+
+  .crew-history-number {
+    width: 1.7rem;
+    height: 1.7rem;
+  }
+}
+
+/*
+ * ================================================================
+ * CREW ASSIGNMENT LAYOUT CORRECTIONS
+ * ================================================================
+ *
+ * These rules correct the current-assignment layout shown in the
+ * browser.
+ *
+ * They ensure that:
+ *
+ * 1. Quick statistics appear as separate cards.
+ * 2. Crew panels have visible white containers.
+ * 3. The emergency-details and map panels remain aligned.
+ * 4. The ambulance and destination labels do not overlap.
+ * 5. The screen remains responsive on tablets and phones.
+ */
+
+/*
+ * Creates four separate summary-card columns on wide screens.
+ *
+ * minmax(0, 1fr) allows each card to shrink without forcing horizontal
+ * scrolling.
+ */
+.crew-assignment-screen > .statistics-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  width: 100%;
+  margin: 0;
+}
+
+/*
+ * Restores the complete card appearance for each crew statistic.
+ *
+ * The browser screenshot currently shows the statistic fields compressed
+ * together because the cards are missing a strong visual container.
+ */
+.crew-assignment-screen .statistic-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 155px;
+  padding: 1.2rem;
+  border: 1px solid #d7e0ea;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow:
+    0 7px 20px
+    rgba(30, 46, 72, 0.07);
+}
+
+/*
+ * Places the small statistic label above the main value.
+ */
+.crew-assignment-screen .statistic-label {
+  display: block;
+  margin-bottom: 0.7rem;
+  color: #637389;
+  font-size: 0.74rem;
+  font-weight: 750;
+  letter-spacing: 0.055em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+/*
+ * Displays the main statistic value on its own line.
+ *
+ * Examples:
+ *
+ *     Medic 101
+ *     DISPATCHED
+ *     CRITICAL
+ *     2.83
+ */
+.crew-assignment-screen .statistic-value {
+  display: block;
+  margin: 0;
+  color: #162c48;
+  font-size: clamp(1.35rem, 2.2vw, 2rem);
+  font-weight: 800;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+/*
+ * Pushes the supporting description toward the bottom of the card.
+ */
+.crew-assignment-screen .statistic-description {
+  display: block;
+  margin-top: auto;
+  padding-top: 0.8rem;
+  color: #718096;
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+/*
+ * Ensures both main crew panels display as complete white cards.
+ */
+.crew-assignment-screen .crew-grid > .panel {
+  overflow: hidden;
+  border: 1px solid #d7e0ea;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow:
+    0 7px 20px
+    rgba(30, 46, 72, 0.07);
+}
+
+/*
+ * Restores a visible header area above each crew panel.
+ */
+.crew-assignment-screen .panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.15rem 1.3rem;
+  border-bottom: 1px solid #e1e7ef;
+  background: #f9fbfd;
+}
+
+/*
+ * Removes unintended heading margins inside crew-panel headers.
+ */
+.crew-assignment-screen .panel-header h2 {
+  margin: 0.25rem 0 0;
+  color: #172033;
+  font-size: 1.2rem;
+}
+
+/*
+ * Displays the emergency call ID as a visible circular count.
+ */
+.crew-assignment-screen .panel-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  height: 2.5rem;
+  padding: 0 0.65rem;
+  border-radius: 999px;
+  background: #173d68;
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 750;
+}
+
+/*
+ * Places the blue ambulance marker's label on the LEFT side of its
+ * marker.
+ *
+ * The destination label remains on the right side of the red marker.
+ * This prevents the two labels from overlapping when both locations are
+ * geographically close.
+ */
+.crew-map-marker-ambulance {
+  flex-direction: row-reverse;
+}
+
+/*
+ * Adds a little space between the ambulance marker and its left-side
+ * information box.
+ */
+.crew-map-marker-ambulance .crew-map-label {
+  margin-right: 0.35rem;
+}
+
+/*
+ * Adds a little space between the destination marker and its right-side
+ * information box.
+ */
+.crew-map-marker-destination .crew-map-label {
+  margin-left: 0.35rem;
+}
+
+/*
+ * Makes the connecting route easier to see when the ambulance and
+ * destination are close together.
+ */
+.crew-route-line {
+  stroke: #c92538;
+  stroke-width: 3;
+  stroke-dasharray: 7 5;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+/*
+ * ================================================================
+ * TABLET AND IPAD CORRECTIONS
+ * ================================================================
+ */
+
+/*
+ * Use two summary cards per row on tablets.
+ */
+@media (max-width: 1100px) {
+  .crew-assignment-screen > .statistics-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  /*
+   * Stack emergency information above the map when the available
+   * workspace is too narrow for two readable columns.
+   */
+  .crew-assignment-screen .crew-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/*
+ * ================================================================
+ * MOBILE PHONE CORRECTIONS
+ * ================================================================
+ */
+
+@media (max-width: 600px) {
+  /*
+   * Use one summary card per row on phones.
+   */
+  .crew-assignment-screen > .statistics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /*
+   * Slightly reduce statistic-card height and spacing on mobile.
+   */
+  .crew-assignment-screen .statistic-card {
+    min-height: 135px;
+    padding: 1rem;
+  }
+
+  /*
+   * Place both map labels beneath their markers on phones.
+   *
+   * This overrides the desktop row-reverse behavior for the ambulance
+   * marker.
+   */
+  .crew-map-marker,
+  .crew-map-marker-ambulance {
+    flex-direction: column;
+  }
+
+  .crew-map-marker-ambulance .crew-map-label,
+  .crew-map-marker-destination .crew-map-label {
+    margin-right: 0;
+    margin-left: 0;
+  }
+}
+
+
+
+
+/*
+ * ================================================================
+ * CREW STATUS SCREEN — LAYOUT CORRECTIONS
+ * ================================================================
+ *
+ * These rules correct the compressed layout currently visible on the
+ * Update Status screen.
+ *
+ * They provide:
+ *
+ * 1. Four separate summary cards on desktop.
+ * 2. Proper white containers around both lifecycle panels.
+ * 3. Styled panel headers and count indicators.
+ * 4. A clearly visible primary lifecycle-action button.
+ * 5. Responsive layouts for tablets, iPads, and mobile phones.
+ */
+
+/*
+ * Creates four equal summary-card columns across the available desktop
+ * workspace.
+ *
+ * minmax(0, 1fr) prevents long values such as
+ * CLEANING_AND_RESTOCKING from forcing horizontal page overflow.
+ */
+.crew-status-screen > .statistics-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  width: 100%;
+  margin: 0;
+}
+
+/*
+ * Creates a complete white card around each lifecycle statistic.
+ */
+.crew-status-screen .statistic-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 155px;
+  padding: 1.2rem;
+  border: 1px solid #d7e0ea;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow:
+    0 7px 20px
+    rgba(30, 46, 72, 0.07);
+}
+
+/*
+ * Small uppercase label displayed above each statistic.
+ *
+ * Examples:
+ *
+ *     AMBULANCE
+ *     CURRENT STATUS
+ *     ACTIVE CALL
+ *     TRANSITIONS
+ */
+.crew-status-screen .statistic-label {
+  display: block;
+  margin-bottom: 0.7rem;
+  color: #637389;
+  font-size: 0.74rem;
+  font-weight: 750;
+  letter-spacing: 0.055em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+/*
+ * Main statistic value.
+ *
+ * overflow-wrap allows long lifecycle enum names to wrap inside the
+ * card instead of extending beyond its border.
+ */
+.crew-status-screen .statistic-value {
+  display: block;
+  margin: 0;
+  color: #162c48;
+  font-size: clamp(1.35rem, 2.2vw, 2rem);
+  font-weight: 800;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+/*
+ * Supporting statistic description.
+ *
+ * margin-top: auto pushes this text toward the bottom of the card so
+ * cards remain visually aligned even when their values wrap.
+ */
+.crew-status-screen .statistic-description {
+  display: block;
+  margin-top: auto;
+  padding-top: 0.8rem;
+  color: #718096;
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+/*
+ * Maintains the two-column desktop layout:
+ *
+ *     lifecycle controls | audit history
+ */
+.crew-status-grid {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+  min-width: 0;
+}
+
+/*
+ * Creates visible white panel containers around:
+ *
+ * - Update Ambulance Status
+ * - Session State Changes
+ */
+.crew-status-grid > .panel {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid #d7e0ea;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow:
+    0 7px 20px
+    rgba(30, 46, 72, 0.07);
+}
+
+/*
+ * Creates a distinct header section for each status panel.
+ */
+.crew-status-grid .panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.15rem 1.3rem;
+  border-bottom: 1px solid #e1e7ef;
+  background: #f9fbfd;
+}
+
+/*
+ * Removes browser-default heading spacing from status-panel headers.
+ */
+.crew-status-grid .panel-header h2 {
+  margin: 0.25rem 0 0;
+  color: #172033;
+  font-size: 1.2rem;
+  line-height: 1.3;
+}
+
+/*
+ * Displays the ambulance ID and history count inside circular badges.
+ */
+.crew-status-grid .panel-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  height: 2.5rem;
+  padding: 0 0.65rem;
+  border-radius: 999px;
+  background: #173d68;
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 750;
+}
+
+/*
+ * Ensures the body of both lifecycle panels has consistent spacing.
+ */
+.crew-status-grid .crew-panel-body {
+  padding: 1.3rem;
+}
+
+/*
+ * Explicitly styles the lifecycle-operation button.
+ *
+ * This corrects the browser-default gray button currently visible in
+ * the screenshot.
+ */
+.crew-action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  min-width: 175px;
+  min-height: 46px;
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border: 0;
+  border-radius: 9px;
+  background: #173d68;
+  color: #ffffff;
+  font-size: 0.86rem;
+  font-weight: 750;
+  line-height: 1.3;
+  text-align: center;
+  transition:
+    background-color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
+}
+
+/*
+ * Mouse-hover state for the lifecycle button.
+ */
+.crew-action-button:hover {
+  background: #245784;
+  box-shadow:
+    0 8px 20px
+    rgba(23, 61, 104, 0.22);
+  transform: translateY(-1px);
+}
+
+/*
+ * Accessible keyboard-focus indicator.
+ */
+.crew-action-button:focus-visible {
+  outline:
+    3px solid
+    rgba(40, 106, 166, 0.3);
+  outline-offset: 3px;
+}
+
+/*
+ * ================================================================
+ * TABLET AND IPAD LAYOUT
+ * ================================================================
+ */
+
+/*
+ * Use two summary cards per row and stack the main panels when the
+ * workspace becomes too narrow for a readable two-column layout.
+ */
+@media (max-width: 1100px) {
+  .crew-status-screen > .statistics-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .crew-status-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/*
+ * Makes lifecycle actions easier to press on touch devices.
+ */
+@media (max-width: 850px) {
+  .crew-action-card {
+    grid-template-columns: 1fr;
+  }
+
+  .crew-action-button {
+    width: 100%;
+    min-height: 52px;
+  }
+}
+
+/*
+ * ================================================================
+ * MOBILE PHONE LAYOUT
+ * ================================================================
+ */
+
+@media (max-width: 600px) {
+  /*
+   * Display one summary card per row.
+   */
+  .crew-status-screen > .statistics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /*
+   * Reduce card height and padding on smaller screens.
+   */
+  .crew-status-screen .statistic-card {
+    min-height: 135px;
+    padding: 1rem;
+  }
+
+  /*
+   * Preserve usable phone width inside the lifecycle panels.
+   */
+  .crew-status-grid .crew-panel-body {
+    padding: 0.85rem;
+  }
+
+  .crew-status-grid .panel-header {
+    align-items: flex-start;
+    padding: 1rem;
+  }
+
+  /*
+   * Make operation buttons fill the available mobile width.
+   */
+  .crew-action-button {
+    width: 100%;
+  }
+}
+
+
