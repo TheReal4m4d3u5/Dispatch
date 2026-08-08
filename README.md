@@ -496,6 +496,12 @@ This domain model keeps the first-pass business concepts separate from later sof
 
 ## Use Cases
 
+<img width="1100" height="867" alt="image" src="https://github.com/user-attachments/assets/b5f2b119-c0ee-4db9-af3c-48752537a533" />
+
+<img width="528" height="905" alt="image" src="https://github.com/user-attachments/assets/7571746e-a7ca-4a2a-a9b7-b765f6e79b6f" />
+
+
+
 The main use cases are organized into six functional areas:
 
 Emergency Intake  
