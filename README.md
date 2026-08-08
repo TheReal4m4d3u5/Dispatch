@@ -237,43 +237,7 @@ The UML artifacts are not separate drawings created only for documentation. Each
 
 
 
-**Question answered:** What important concepts exist in the ambulance-dispatch problem domain, and how are they related?
 
-The domain model is intentionally technology-independent. It focuses on business concepts such as:
-
-```text
-EmergencyCall
-Ambulance
-Dispatch
-Location
-Priority
-Hospital
-```
-
-It should not be dominated by Spring controllers, DTOs, hash maps, priority queues, repositories, or route-provider interfaces because those are implementation/design concepts introduced later.
-
-For this project, the domain model establishes that an `EmergencyCall` needs a response, an `Ambulance` is a resource that can respond, and a `Dispatch` represents the assignment relationship. `Priority` influences call urgency, while `Location` supports incident and resource positioning.
-
-The domain model is the conceptual foundation for the later class design, but it is not the same thing as the class diagram.
-
-### Use-Case Diagram
-
-**Question answered:** Who uses the system, and what goals do they need the system to support?
-
-The use-case diagrams identify actors and user goals rather than Java methods.
-
-Primary actors include:
-
-```text
-Emergency Dispatcher
-Ambulance Crew
-Fleet Supervisor
-Administrator
-```
-
-The use cases are grouped into Emergency Intake, Dispatch, Resource Coordination, Field Response, Fleet Operations, and Administration. This avoids one oversized diagram and keeps related system goals together.
-
-For the main dispatch workflow, the important use case is **Dispatch Ambulance**. The diagram shows that the Emergency Dispatcher initiates the goal; it does not attempt to show a `PriorityQueue`, `Facade`, or REST endpoint.
 
 ### Use-Case Scenario
 
