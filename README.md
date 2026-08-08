@@ -163,42 +163,12 @@ BDD / TDD / API / Architecture Tests
 
 ## Design Process
 
-I used an object-oriented and use-case-driven design approach by first understanding the ambulance dispatch problem before writing or refining the implementation. I identified the major behaviors the system needed to support: accepting and evaluating EmergencyCalls, assigning Priority, maintaining waiting-call order, identifying appropriate Ambulances, determining the best available response, allowing the Emergency Dispatcher to approve or override a recommendation, recording a Dispatch, supporting Ambulance Crew response states, managing fleet availability, and reviewing operational history.
 
-The development process started with noun analysis and domain modeling. I reviewed the requirements and extracted important nouns such as EmergencyCall, Ambulance, Dispatch, Location, Priority, Hospital, Emergency Dispatcher, Ambulance Crew, Fleet Supervisor, Administrator, ClinicalCapability, jurisdiction, mutual aid, availability, recommendation, response status, and travel estimate. I then evaluated each noun by asking whether it represented a meaningful object with state, behavior, and responsibility within the system.
-
-The first-pass domain model focused on six major business concepts: EmergencyCall, Ambulance, Dispatch, Location, Priority, and Hospital. Supporting software objects such as AmbulanceCallCenter, DispatchRecommendation, DispatchRecord, EmergencyCallComparator, AmbulanceDispatchFacade, CadRecommendationService, DispatchController, and TravelEstimateProvider were introduced later during detailed design.
-
-The use cases were organized into functional groups instead of placing every use case on one large diagram. The major groups are Emergency Intake, Dispatch, Resource Coordination, Field Response, Fleet Operations, and Administration. This keeps related behavior together and prevents the Emergency Dispatcher from having an excessively large flat list of use cases.
-
-The use-case text is written in active voice using an event/response flow. The actor performs an action, the system responds, and the use-case text describes both sides of the interaction. The use cases use the agreed domain vocabulary but do not contain implementation details such as PriorityQueue, HashMap, REST endpoints, Java methods, Controllers, or Facades.
-
-After the use cases were written, robustness analysis was used to connect use-case behavior to boundary, control, and entity responsibilities. The Dispatch Ambulance robustness analysis showed that Ambulance is the primary entity during resource selection, while Dispatch becomes the primary business entity after the Emergency Dispatcher confirms the assignment.
-
-Sequence diagrams were then used to allocate behavior to concrete classes and methods. Method calls are numbered only with whole-number integers. Return values are not numbered, and return arrows are only shown when they add useful information. Loop and alternate behavior are shown inside UML combined-fragment boxes.
-
-The implementation was then refined using Java, Spring Boot, React, JUnit, Cucumber, REST testing, and architecture checks. The project therefore moves from requirements analysis, to noun analysis, to domain modeling, to use cases, to robustness analysis, to sequence diagrams, to class design, to implementation, and finally to automated testing.
 
 
 ## Assumptions and Open Questions
 
-Several assumptions were made because the project does not define every operational rule that would exist in a real emergency communications center.
 
-I assumed that the Emergency Dispatcher is the primary actor responsible for ambulance dispatch. The system may also coordinate Fire, Police, mutual-aid EMS, specialized response teams, emergency management, or other emergency-support resources, but ambulance dispatch remains the main workflow being modeled.
-
-I assumed that ACTIVE/on-duty and AVAILABLE are separate concepts. An Ambulance may be active and staffed while still being unavailable because it is already responding to another EmergencyCall or temporarily unable to accept another assignment.
-
-I assumed that the CAD system recommends an Ambulance rather than automatically making the final dispatch decision. The Emergency Dispatcher reviews the recommended Ambulance and may accept the recommendation or select another appropriate Ambulance.
-
-I assumed that equal-priority EmergencyCalls must remain first come, first served. Because two calls can share the same Priority and timestamp, arrivalSequence is used as the final deterministic tie-break.
-
-I assumed that DispatchRecommendation and DispatchRecord represent two different concepts. DispatchRecommendation represents the proposed assignment before approval. DispatchRecord represents the committed assignment after the Emergency Dispatcher confirms the Dispatch.
-
-I assumed that Ambulance Crew acknowledgement is a separate use case from Dispatch Ambulance. Dispatch Ambulance ends after the assignment is confirmed and recorded. The Ambulance Crew then acknowledges the Dispatch and begins responding.
-
-I also assumed that Hospital is part of the overall domain but is not involved in the initial Dispatch Ambulance use case. Hospital becomes relevant later if the Ambulance Crew transports a patient.
-
-In a real client engagement, I would ask whether dispatchers can override clinical capability rules, whether some incident types automatically require Fire or Police response, when mutual aid may be used, how long a crew may remain unacknowledged before escalation, whether an en-route Ambulance may be diverted to a higher-priority EmergencyCall, and how real-time traffic or road closures should influence recommendations.
 
 
 ## Design Decision Log
