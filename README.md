@@ -237,221 +237,10 @@ In a real client engagement, I would ask whether dispatchers can override clinic
 
 ### Use-Case Scenario
 
-**Question answered:** What happens step by step when the actor performs a system goal?
-
-The detailed **Dispatch Ambulance** scenario provides the behavioral contract that later diagrams must realize.
-
-The main success flow establishes that the system:
-
-1. receives a dispatch-ready emergency,
-2. identifies appropriate ambulances,
-3. determines the best recommendation,
-4. presents the recommendation,
-5. allows the dispatcher to accept or select another ambulance,
-6. revalidates the selected ambulance,
-7. receives confirmation, and
-8. records the dispatch.
-
-The alternate flows are equally important because they define required behavior when no ambulance is available, a recommendation becomes stale, another ambulance is selected, the emergency no longer needs a response, or the dispatcher does not confirm.
-
-The scenario remains implementation-neutral. It says **what the system must do**, not that a `HashMap` or a specific Java method performs the step.
-
-### Robustness Diagram
-
-**Question answered:** Which boundary, control, and entity responsibilities are needed to realize the use-case scenario?
-
-Robustness analysis is the bridge between use-case text and detailed object design.
-
-For Dispatch Ambulance, the analysis separates:
-
-- **Boundary:** dispatcher-facing interaction such as `DispatchWorkspace`
-- **Control:** coordination of the dispatch use case
-- **Entity:** `EmergencyCall`, `Ambulance`, `DispatchRecommendation`, and `Dispatch`/`DispatchRecord`
-
-The robustness analysis helps prevent responsibility mistakes. For example, the user-interface boundary should not determine whether an ambulance is appropriate, and an entity should not directly manage HTTP input.
-
-In the selection portion of the workflow, `Ambulance` is the primary entity because it owns the information needed to determine availability and suitability. After confirmation, `Dispatch` becomes the important business relationship and `DispatchRecord` becomes the committed Java representation.
-
-### Sequence Diagram
-
-**Question answered:** Which concrete objects call which operations, and in what order, to implement the scenario?
-
-The sequence diagram is where the conceptual behavior becomes source-aligned method collaboration.
-
-The project traces the request through participants such as:
-
-```text
-Emergency Dispatcher
-DispatchWorkspace
-DispatchController
-AmbulanceDispatchFacade
-AmbulanceCallCenter
-CadRecommendationService
-TravelEstimateProvider
-EmergencyCall
-Ambulance
-DispatchRecommendation
-DispatchRecord
-```
-
-This diagram is especially important for demonstrating MVC and Facade because the message order makes the architectural boundary visible:
-
-```text
-Boundary → MVC Controller → Facade → Domain/Application Subsystem
-```
-
-It also demonstrates where revalidation occurs before dispatch commitment. The sequence diagram should therefore agree with the real method signatures in the implementation.
-
-### Class Diagram
-
-**Question answered:** What classes exist in the detailed software design, what state and operations do they own, and how are they related?
-
-The class diagram is more implementation-specific than the domain model. It contains software classes that did not belong in the first-pass domain model, including:
-
-```text
-AmbulanceCallCenter
-EmergencyCallComparator
-AmbulanceDispatchFacade
-CadRecommendationService
-DispatchController
-DispatchWebMapper
-DispatchRecommendation
-DispatchRecord
-```
-
-This is also the UML artifact where the project's data-structure choices become visible through fields such as:
-
-```text
-PriorityQueue<EmergencyCall>
-HashMap<Integer, Ambulance>
-HashSet<Integer>
-HashMap<Integer, DispatchRecord>
-HashMap<Long, DispatchRecommendation>
-ArrayList<DispatchRecord>
-```
-
-The class diagram therefore demonstrates the convergence of OOAD, MVC architecture, Facade, and data-structure implementation.
-
-### How the UML Artifacts Connect
-
-The artifacts intentionally increase in technical detail:
-
-| Artifact | Main Question | Technology Detail |
-|---|---|---|
-| Domain Model | What concepts exist? | Very low |
-| Use-Case Diagram | Who wants what from the system? | Very low |
-| Use-Case Scenario | What behavior must occur? | Low |
-| Robustness Diagram | What boundary/control/entity responsibilities are required? | Medium |
-| Sequence Diagram | Which concrete objects/methods collaborate? | High |
-| Class Diagram | What is the final static software structure? | High |
-
-The **Dispatch Ambulance** thread can be followed across all of them:
-
-```text
-Domain concept: EmergencyCall + Ambulance + Dispatch
-        ↓
-Use-case goal: Dispatch Ambulance
-        ↓
-Scenario: identify → recommend → review → revalidate → confirm → record
-        ↓
-Robustness: Boundary → Control → Entities
-        ↓
-Sequence: DispatchController → AmbulanceDispatchFacade → AmbulanceCallCenter / services / entities
-        ↓
-Class design: MVC classes + Facade + domain objects + data structures
-        ↓
-Implementation: Spring Boot + Java collections
-        ↓
-Tests: BDD + TDD + REST/API + architecture checks
-```
-
-This traceability is one of the main strengths of the project because the implementation can be explained from both the software-architecture perspective and the data-structures perspective.
 
 
-## Noun Analysis
-
-The noun analysis started by identifying important nouns from the emergency call and ambulance dispatch requirements.
-
-Important nouns included:
-
-EmergencyCall  
-Ambulance  
-Dispatch  
-DispatchRecommendation  
-DispatchRecord  
-Location  
-Priority  
-Hospital  
-Emergency Dispatcher  
-Ambulance Crew  
-Fleet Supervisor  
-Administrator  
-ClinicalCapability  
-jurisdiction  
-mutual aid  
-arrivalSequence  
-waiting queue  
-availability  
-response status  
-route  
-travel estimate  
-Fire Department  
-Police Department  
-Emergency Support Agency  
-
-The nouns were evaluated by asking whether each concept needed meaningful state, behavior, identity, or lifecycle within the system.
-
-The core business-domain objects are:
-
-EmergencyCall  
-Ambulance  
-Dispatch  
-Location  
-Priority  
-Hospital  
-
-The primary actors are:
-
-Emergency Dispatcher  
-Ambulance Crew  
-Fleet Supervisor  
-Administrator  
-
-Actors are not modeled as domain classes simply because they use the system. They represent external roles unless the application specifically needs to store and manage actor identity or account information.
-
-DispatchRecommendation and DispatchRecord were introduced during detailed design to refine the business concept of Dispatch. ClinicalCapability, jurisdiction, mutual aid, duty status, ambulance status, and arrivalSequence are supporting values or types. PriorityQueue, HashMap, HashSet, Controllers, Facades, REST endpoints, and Google Routes are implementation concepts rather than first-pass domain objects.
-
-![Noun Analysis](assets/noun-analysis.png)
 
 
-## Domain Modeling
-
-The domain model was created by identifying the meaningful entities that exist in the ambulance dispatch problem domain and validating whether each object has meaningful state and behavior.
-
-The core domain objects are:
-
-EmergencyCall  
-Ambulance  
-Dispatch  
-Location  
-Priority  
-Hospital  
-
-EmergencyCall represents an emergency incident that has been accepted and evaluated. It stores information such as the current Priority, incident Location, required ClinicalCapability, jurisdiction, mutual-aid permission, and intake ordering information. EmergencyCall provides the information needed to determine what kind of response is required.
-
-Ambulance represents an EMS response resource. It stores duty status, operational status, ClinicalCapability, jurisdiction, current Location, active EmergencyCall, availability information, GPS position, and state history. Ambulance is responsible for determining whether it is available, whether it is appropriate for an EmergencyCall, and whether a requested lifecycle transition is legal.
-
-Dispatch represents the relationship that assigns an Ambulance to an EmergencyCall. In the detailed Java design, DispatchRecommendation represents a proposed assignment before dispatcher approval, while DispatchRecord represents the committed assignment after approval.
-
-Location represents a geographic position. It is used for the EmergencyCall location, Ambulance location, scene location, route calculations, and Hospital destination. Location also supports direct distance calculations when needed.
-
-Priority represents the medical urgency of an EmergencyCall. Priority is used by EmergencyCallComparator when ordering waiting calls.
-
-Hospital represents a patient transport destination. Hospital remains part of the overall business domain, but it is not involved in the initial Dispatch Ambulance use case. The current implementation represents hospital destinations with Location rather than a dedicated Hospital Java class.
-
-This domain model keeps the first-pass business concepts separate from later software-design objects such as Controllers, Facades, recommendation services, repositories, DTOs, and Java collection classes.
-
-![Domain Model](assets/domain-model.png)
 
 
 ## Use Cases
@@ -461,208 +250,11 @@ This domain model keeps the first-pass business concepts separate from later sof
 <img width="528" height="905" alt="image" src="https://github.com/user-attachments/assets/7571746e-a7ca-4a2a-a9b7-b765f6e79b6f" />
 
 
-
-The main use cases are organized into six functional areas:
-
-Emergency Intake  
-Dispatch  
-Resource Coordination  
-Field Response  
-Fleet Operations  
-Administration  
-
-![Use Case Packages](assets/use-case-packages.png)
-
-
-### Emergency Dispatcher
-
-The Emergency Dispatcher participates in Emergency Intake, Dispatch, and Resource Coordination.
-
-Major use cases include:
-
-- Accept Emergency Call
-- Evaluate Emergency Call
-- Assign Priority
-- Change Priority
-- Determine Response Needs
-- View Waiting Emergencies
-- View Available Ambulances
-- Dispatch Ambulance
-- Review Ambulance Recommendation
-- Override Ambulance Recommendation
-- Monitor Active Dispatches
-- Handle Unacknowledged Dispatch
-- Reassign Emergency Resource
-- Request Ambulance Response
-- Request Fire Response
-- Request Police Response
-- Request Additional EMS
-- Authorize Mutual Aid
-- Request Specialized Response
-- Request Emergency Support
-
-![Emergency Dispatcher Use Cases](assets/emergency-dispatcher-use-cases.png)
-
-
 ### Dispatch Ambulance
 
-Primary Actor: Emergency Dispatcher
-
-The Emergency Dispatcher dispatches an appropriate Ambulance to an evaluated EmergencyCall. The system identifies eligible Ambulances, determines the best available choice, presents a recommendation, allows the Emergency Dispatcher to approve or choose another appropriate Ambulance, revalidates the selected Ambulance, and records the confirmed Dispatch.
-
-Main flow:
-
-1. The Emergency Dispatcher completes the EmergencyCall evaluation and indicates that the EmergencyCall is ready for dispatch.
-2. The system identifies Ambulances that are currently available and appropriate for the EmergencyCall.
-3. The system determines which appropriate Ambulance can provide the best response and presents that Ambulance as the recommendation.
-4. The Emergency Dispatcher reviews the recommended Ambulance.
-5. The Emergency Dispatcher accepts the recommended Ambulance or selects another appropriate Ambulance.
-6. The system verifies that the selected Ambulance is still eligible and that the EmergencyCall still requires a response.
-7. The Emergency Dispatcher confirms the Dispatch.
-8. The system records the Dispatch between the EmergencyCall and the selected Ambulance.
-
-Alternative flows:
-
-- If no appropriate Ambulance is currently available, the system keeps the EmergencyCall waiting for dispatch.
-- If the Emergency Dispatcher selects another Ambulance, the system validates the alternate Ambulance before commitment.
-- If the selected Ambulance is no longer available or appropriate, the system rejects the stale selection and provides another option.
-- If the EmergencyCall no longer requires dispatch, the system does not create a DispatchRecord.
-- If the Emergency Dispatcher does not confirm the Dispatch, the system does not commit the assignment.
-
-![Dispatch Ambulance Use Case](assets/dispatch-ambulance-use-case.png)
-
-The robustness analysis for Dispatch Ambulance maps each behavior to the entity that owns or supplies the required information.
-
-| Robustness Behavior | Primary Entity | Supporting Entities |
-|---|---|---|
-| Identify Ambulances | Ambulance | EmergencyCall, Priority, Location |
-| Determine Best Choice | Ambulance | EmergencyCall, Priority, Location |
-| Review Recommended Ambulance | Ambulance | EmergencyCall, DispatchRecommendation |
-| Dispatcher Accepts or Chooses Another | Ambulance | EmergencyCall, DispatchRecommendation |
-| Revalidate Selected Ambulance | Ambulance | EmergencyCall, DispatchRecommendation |
-| Confirm Dispatch | Dispatch / DispatchRecord | EmergencyCall, Ambulance |
-| Record Confirmed Assignment | DispatchRecord | EmergencyCall, Ambulance |
-
-Ambulance is the primary entity during resource selection because it owns availability, duty status, capability, jurisdiction, Location, and assignment state. After the dispatcher confirms the assignment, Dispatch becomes the primary business entity and DispatchRecord becomes the concrete Java object representing the committed assignment.
-
-Hospital does not participate in Dispatch Ambulance because no patient transport destination has been selected yet.
-
-![Dispatch Ambulance Robustness Diagram](assets/dispatch-ambulance-robustness.png)
-
-The Dispatch Ambulance sequence diagram allocates the robustness behavior to concrete classes and methods. Only actual method calls are numbered, and the final diagram uses whole-number integers only. Return arrows are not numbered. Loop and alternate behavior are contained inside UML combined-fragment boxes.
-
-The detailed design uses the following participants:
-
-Emergency Dispatcher  
-DispatchWorkspace  
-DispatchController  
-AmbulanceDispatchFacade  
-AmbulanceCallCenter  
-CadRecommendationService  
-TravelEstimateProvider  
-EmergencyCall  
-Ambulance  
-DispatchRecommendation  
-DispatchRecord  
-
-The source-aligned method flow includes:
-
-1. DispatchController.recommendNext()
-2. AmbulanceDispatchFacade.recommendNext()
-3. AmbulanceCallCenter.cadRecommendationContext()
-4. EmergencyCall.getCurrentPriority()
-5. EmergencyCall.getLocation()
-6. EmergencyCall.getRequiredCapability()
-7. EmergencyCall.getJurisdiction()
-8. EmergencyCall.isMutualAidAllowed()
-9. Ambulance.isAvailable()
-10. Ambulance.isActiveOnDuty()
-11. Ambulance.isAppropriateFor(...)
-12. Ambulance.snapshot()
-13. CadRecommendationService.recommend(context)
-14. CadRecommendationService.estimate(origin, destination)
-15. TravelEstimateProvider.computeTravelEstimate(origin, destination)
-16. AmbulanceCallCenter.createRecommendation(...)
-17. AmbulanceCallCenter.recommendationSnapshot(...)
-18. DispatchWebMapper.toRecommendationResponse(...)
-19. DispatchController.approve(recommendationId)
-20. AmbulanceDispatchFacade.approveRecommendation(recommendationId)
-21. AmbulanceCallCenter.approveRecommendation(recommendationId)
-22. AmbulanceCallCenter.requireRecommendation(...)
-23. DispatchRecommendation.callId()
-24. DispatchRecommendation.recommendedAmbulanceId()
-25. AmbulanceCallCenter.findWaitingCall(...)
-26. AmbulanceCallCenter.requireAmbulance(...)
-27. AmbulanceCallCenter.dispatchSpecific(...)
-28. Ambulance.isAppropriateFor(...)
-29. Ambulance.assignTo(call, dispatchedAt)
-30. AmbulanceCallCenter.dispatchBatch(record)
-31. DispatchRecord.snapshot()
-32. DispatchWebMapper.toDispatchBatchResponse(...)
-
-DispatchRecord is created during the successful approval path. If the selected Ambulance is no longer eligible or the EmergencyCall no longer requires dispatch, the successful mutation does not occur.
-
-![Dispatch Ambulance Sequence Diagram](assets/dispatch-ambulance-sequence.png)
 
 
-### Ambulance Crew
 
-The Ambulance Crew participates in the Field Response use cases.
-
-Major use cases include:
-
-- View Assigned Emergency
-- Acknowledge Dispatch
-- View Route to Emergency
-- Update Ambulance Location
-- Report Arrival on Scene
-- Manage On-Scene Response
-- Manage Patient Transport
-- Complete Emergency Response
-- Return Ambulance to Service
-
-Acknowledge Dispatch is separate from Dispatch Ambulance. After a DispatchRecord exists, the Ambulance Crew acknowledges the committed Dispatch. The system records the acknowledgement and the Ambulance transitions from DISPATCHED to EN_ROUTE.
-
-![Ambulance Crew Use Cases](assets/ambulance-crew-use-cases.png)
-
-
-### Fleet Supervisor
-
-The Fleet Supervisor participates in Fleet Operations.
-
-Major use cases include:
-
-- View Ambulance Fleet
-- Register Ambulance
-- Manage Ambulance Availability
-- Manage Refueling
-- Manage Ambulance Maintenance
-- Mark Ambulance Unstaffed
-- Take Ambulance Out of Service
-- Restore Ambulance to Service
-- Review Ambulance Status History
-
-![Fleet Supervisor Use Cases](assets/fleet-supervisor-use-cases.png)
-
-
-### Administrator
-
-The Administrator participates in Administration.
-
-Major use cases include:
-
-- Review System Statistics
-- Review Dispatch History
-- Review Ambulance Utilization
-- Review Emergency Call Activity
-- Review Operational Performance
-
-![Administrator Use Cases](assets/administrator-use-cases.png)
-
-
-## UML Class Diagram
-
-![UML Class Diagram](assets/class-diagram.png)
 
 
 ### Classes
@@ -801,36 +393,10 @@ Class: DispatchWebMapper
 
 ## Application Flow
 
-The application begins when the Emergency Dispatcher receives and evaluates an EmergencyCall.
 
-The system assigns the EmergencyCall a Priority and response requirements. The EmergencyCall is then placed into the waiting PriorityQueue. EmergencyCallComparator orders waiting calls by Priority and then arrivalSequence.
 
-When the Emergency Dispatcher starts the Dispatch Ambulance workflow, the system identifies eligible Ambulances and builds a CAD recommendation context. CadRecommendationService compares the candidate information and travel estimates and returns the best recommendation. The system stores the proposed assignment as a DispatchRecommendation and presents it to the Emergency Dispatcher.
 
-The Emergency Dispatcher can approve the recommended Ambulance or choose another appropriate Ambulance. Before committing the assignment, the system revalidates the EmergencyCall and Ambulance. If the selection is still valid, the Ambulance is assigned and the system creates a DispatchRecord.
 
-The Ambulance Crew then uses a separate Acknowledge Dispatch workflow. After acknowledgement, the Ambulance can move through the response lifecycle from DISPATCHED to EN_ROUTE, ON_SCENE, TRANSPORTING, AT_HOSPITAL, and eventually back to AVAILABLE.
-
-The core application flow is:
-
-1. Accept EmergencyCall.
-2. Evaluate EmergencyCall.
-3. Assign Priority and response requirements.
-4. Add EmergencyCall to waiting PriorityQueue.
-5. Select the next waiting EmergencyCall.
-6. Identify eligible Ambulances.
-7. Determine the best Ambulance.
-8. Create DispatchRecommendation.
-9. Emergency Dispatcher reviews recommendation.
-10. Emergency Dispatcher approves or overrides.
-11. Revalidate EmergencyCall and Ambulance.
-12. Assign Ambulance.
-13. Create DispatchRecord.
-14. Ambulance Crew acknowledges Dispatch.
-15. Continue the Ambulance response lifecycle.
-16. Complete the Dispatch and retain history.
-
-![Application Flow](assets/application-flow.png)
 
 
 ### BDD Scenarios
@@ -899,360 +465,49 @@ Scenario: Complete an emergency without transport
 
 ## TDD Traceability to Methods
 
-TDD was used to verify the individual methods and classes that implement waiting-call ordering, ambulance eligibility, CAD recommendation, dispatcher approval, ambulance lifecycle rules, location updates, and Dispatch chronology.
-
-Class / Method                                      TDD Test
---------------------------------------------------------------------------------
-EmergencyCallComparator.compare()                   criticalPrecedesHigh
-
-EmergencyCallComparator.compare()                   equalPriorityUsesArrivalSequence
-
-EmergencyCallComparator.compare()                   sameTimestampStillUsesArrivalSequence
-
-PriorityQueue<EmergencyCall> ordering               higherPriorityIsRemovedFirst
-
-PriorityQueue<EmergencyCall> ordering               equalPriorityUsesArrivalSequenceForFcfs
-
-AmbulanceCallCenter.cadRecommendationContext()      emptySystemHasNoCadRecommendation
-
-AmbulanceCallCenter.approveRecommendation()         dispatcherApprovesCadRecommendation
-
-Ambulance.isAppropriateFor()                        onlyAppropriateUnitsAppearInCadCandidateSet
-
-Ambulance.isAvailable()                             activeAndAvailableAreDifferent
-
-Ambulance.isActiveOnDuty()                          activeAndAvailableAreDifferent
-
-AmbulanceCallCenter.authorizeMutualAid()            mutualAidMakesNeighboringUnitEligible
-
-AmbulanceCallCenter.registerAmbulance()             duplicateAmbulanceIdIsRejected
-
-AmbulanceCallCenter.acknowledgeDispatch()           crewMustAcknowledgeBeforeSceneArrival
-
-AmbulanceCallCenter.escalateCall()                  escalationPreservesImmutableOrderingIdentity
-
-Ambulance.updatePosition()                          newerGpsReadingUpdatesTheAmbulanceLocation
-
-Ambulance.updatePosition()                          staleGpsReadingIsRejectedWithoutChangingLocation
-
-Ambulance.beginTransport()                          transportBeforeSceneIsRejectedWithoutMutation
-
-DispatchRecord.recordAcknowledged()                 crewAcknowledgementIsRecorded
-
-DispatchRecord.snapshot()                           dispatchSnapshotReflectsCurrentChronology
 
 
-### Traceability Summary
-
-```text
-Requirement
-        ↓
-Use Case
-        ↓
-BDD Scenario
-        ↓
-Robustness Behavior
-        ↓
-Sequence Method
-        ↓
-Class / Method
-        ↓
-TDD Unit Test
-```
-
-The traceability connects each major dispatch requirement to the use cases, robustness behavior, sequence-diagram method calls, Java classes, and automated tests that implement and verify the required behavior.
 
 
-## Spring Boot MVC Architecture Analysis
-
-The project uses Spring Boot's MVC web architecture as the boundary between the React client and the Java application. The important point is not merely that Spring annotations are present. The MVC structure is demonstrated by **where responsibilities are placed** and by the direction in which requests travel through the system.
-
-### Why This Is MVC
-
-MVC separates user-interface concerns from application/domain concerns.
-
-In this project, a dispatcher action begins in the React user interface. The request reaches a Spring MVC controller. The controller does not manipulate the `PriorityQueue`, select ambulances, change ambulance state, or create dispatch records directly. Instead, it delegates the application use case to `AmbulanceDispatchFacade`. The Facade coordinates the domain objects and supporting services, and the resulting snapshots are mapped into web responses for the view.
-
-That separation creates the following architectural path:
-
-```text
-React View
-    ↓ HTTP / JSON
-Spring MVC DispatchController
-    ↓ application use-case call
-AmbulanceDispatchFacade
-    ↓ coordination
-AmbulanceCallCenter + CadRecommendationService + Domain Objects
-    ↓ snapshots/results
-DispatchWebMapper
-    ↓ response DTO / JSON
-React View
-```
-
-This is MVC because the web-facing controller receives and translates user requests, the view presents information and user actions, and the model contains the application/domain state and behavior. The project uses a separate React client rather than server-rendered Spring views, so it is not a traditional Thymeleaf-style MVC application. However, the responsibilities still map cleanly to MVC, and Spring MVC provides the backend controller/request-routing layer.
-
-### Model
-
-The **Model** is broader than a single Java class. It consists of the domain state, business behavior, and application data required to represent ambulance dispatch.
-
-Important model-side classes include:
-
-- `AmbulanceCallCenter`
-- `EmergencyCall`
-- `Ambulance`
-- `DispatchRecommendation`
-- `DispatchRecord`
-- `Location`
-- `Priority`
-- `EmergencyCallComparator`
-- `CadRecommendationService`
-
-`AmbulanceCallCenter` owns the authoritative collections and cross-object invariants. `EmergencyCall` owns emergency-call information. `Ambulance` owns ambulance availability, suitability, assignment state, and guarded lifecycle behavior. `DispatchRecommendation` represents a proposed assignment, while `DispatchRecord` represents a committed assignment.
-
-The model does not know how React renders a screen or how an HTTP endpoint is formatted. That separation is one of the strongest reasons the project can be described as MVC rather than a controller-centric web application.
 
 ### View
 
-The **View** is the React frontend, including the dispatcher workspace that displays waiting emergencies, recommendations, ambulance information, active dispatches, and user controls.
 
-The view is responsible for presentation and user interaction. It should not decide which emergency call has precedence, whether an ambulance is clinically appropriate, whether a lifecycle transition is valid, or whether a stale recommendation can be committed. Those are model/application responsibilities.
 
 ### Controller
 
-`DispatchController` is the **Spring MVC Controller**. Its job is to receive web requests, obtain request data such as recommendation identifiers or override selections, invoke the appropriate application operation, and return a response.
 
-Representative operations include:
-
-```text
-DispatchController.recommendNext()
-DispatchController.approve(recommendationId)
-DispatchController.override(recommendationId, request)
-```
-
-The controller remains intentionally thin. It does not need to know that waiting calls are stored in a `PriorityQueue`, that ambulances are indexed with a `HashMap`, or that the system uses separate recommendation and record objects. Those implementation details are behind the application boundary.
 
 ### MVC Request Flow
 
-A recommendation request illustrates the separation clearly:
 
-1. The Emergency Dispatcher requests a recommendation from the React view.
-2. React sends an HTTP request to the backend.
-3. `DispatchController.recommendNext()` receives the request.
-4. The controller calls `AmbulanceDispatchFacade.recommendNext()`.
-5. The Facade asks `AmbulanceCallCenter` for the current CAD recommendation context.
-6. The call center identifies the next waiting emergency and eligible ambulance information from authoritative state.
-7. `CadRecommendationService` evaluates the candidate information and travel estimates.
-8. `AmbulanceCallCenter` stores a `DispatchRecommendation`.
-9. The result is converted into a web response.
-10. React displays the recommendation to the dispatcher.
-
-Approval follows the same architectural direction. The controller receives the approval request, the Facade coordinates the application operation, and the model revalidates the ambulance before changing authoritative state.
-
-### Spring MVC Controller vs GRASP Controller
-
-The project contains two different ideas that both use the word **Controller**.
-
-`DispatchController` is a **Spring MVC Controller**. It is an adapter at the web boundary. It understands HTTP requests and responses.
-
-`AmbulanceDispatchFacade` acts as the **GRASP Controller** for the dispatch use cases. It receives application-level system operations from the web layer and coordinates the objects that perform the work.
-
-Keeping these responsibilities separate prevents a common design problem in Spring applications: a large `@RestController` that becomes responsible for HTTP handling, business workflow, data-structure manipulation, domain mutation, and external-service coordination all at once.
 
 
 ## Facade Design Pattern Analysis
 
 ### Facade Intent
 
-The **Facade** pattern provides a simplified interface to a more complex subsystem. The client communicates with the Facade rather than learning how to coordinate every class behind it.
 
-In this project, `AmbulanceDispatchFacade` is the Facade. The client of the Facade is primarily `DispatchController`. Behind the Facade are the dispatch subsystem classes and responsibilities, including `AmbulanceCallCenter`, `CadRecommendationService`, waiting-call data structures, ambulance state, recommendations, dispatch records, and travel-estimation behavior.
-
-The Facade exposes application-oriented operations instead of collection-oriented operations:
-
-```text
-recommendNext()
-approveRecommendation(recommendationId)
-overrideRecommendation(recommendationId, ambulanceId, reason)
-acknowledgeDispatch(ambulanceId)
-```
-
-These operations describe **what the user is trying to accomplish**, not **how the subsystem is implemented**.
 
 ### Facade Participants
 
-The pattern can be mapped to the project as follows:
-
-| Facade Role | Project Class / Component | Responsibility |
-|---|---|---|
-| Client | `DispatchController` | Requests dispatch use cases without coordinating subsystem details. |
-| Facade | `AmbulanceDispatchFacade` | Provides a small application-facing interface and coordinates use-case execution. |
-| Subsystem | `AmbulanceCallCenter` | Owns authoritative state, collections, and dispatch invariants. |
-| Subsystem | `CadRecommendationService` | Evaluates candidate ambulance information and recommends a response. |
-| Subsystem | `EmergencyCallComparator` / `PriorityQueue` | Maintains waiting-call precedence. |
-| Subsystem | `Ambulance` | Owns availability, suitability, assignment, and lifecycle behavior. |
-| Subsystem | `DispatchRecommendation` | Represents a recommendation before commitment. |
-| Subsystem | `DispatchRecord` | Represents a confirmed dispatch. |
-| External abstraction | `TravelEstimateProvider` / `RouteProvider` | Isolates routing/travel technology from the application workflow. |
 
 ### Why the Facade Is Necessary
 
-Without the Facade, `DispatchController` would need to know too much. A controller might otherwise have to:
 
-1. Ask the call center for the next waiting emergency.
-2. Read ambulance availability.
-3. Filter candidates by capability and jurisdiction.
-4. Request travel estimates.
-5. invoke CAD ranking.
-6. create and store a recommendation.
-7. later retrieve that recommendation.
-8. revalidate the selected ambulance.
-9. mutate ambulance state.
-10. remove or update waiting-call state.
-11. create a dispatch record.
-12. update active-dispatch collections and history.
-13. map the result into an HTTP response.
 
-That would create high coupling between the web layer and the dispatch subsystem. It would also make the controller difficult to test and difficult to change.
-
-With the Facade, the controller only needs to understand the application contract:
-
-```text
-HTTP request
-    ↓
-Facade operation
-    ↓
-Application result
-    ↓
-HTTP response
-```
-
-The complexity still exists, because the dispatch problem is genuinely complex, but the complexity is **contained behind an intentional boundary**.
-
-### What the Facade Should and Should Not Own
-
-The Facade should own **application coordination**. It decides which subsystem operation should be invoked to complete a use case.
-
-The Facade should **not** become a replacement for the domain model.
-
-For example:
-
-- `Ambulance.isAppropriateFor(...)` belongs on `Ambulance` because the ambulance owns the information needed to determine its suitability.
-- `Ambulance.assignTo(...)` belongs on `Ambulance` because the ambulance owns its assignment state.
-- `EmergencyCallComparator.compare(...)` owns queue ordering policy.
-- `AmbulanceCallCenter` owns the collections and cross-object invariants.
-- `CadRecommendationService` owns candidate recommendation logic.
-- `DispatchController` owns HTTP request/response concerns.
-
-The Facade coordinates these responsibilities but does not absorb them.
 
 ### Facade Request Flow
-
-The recommendation path can be represented as:
-
-```text
-DispatchController
-    ↓ recommendNext()
-AmbulanceDispatchFacade
-    ↓ cadRecommendationContext()
-AmbulanceCallCenter
-    ↓ candidate/context data
-AmbulanceDispatchFacade
-    ↓ recommend(context)
-CadRecommendationService
-    ↓ recommendation decision
-AmbulanceDispatchFacade
-    ↓ createRecommendation(...)
-AmbulanceCallCenter
-    ↓ DispatchRecommendationSnapshot
-DispatchController
-```
-
-The approval path is intentionally shorter at the controller boundary:
-
-```text
-DispatchController
-    ↓ approve(recommendationId)
-AmbulanceDispatchFacade
-    ↓ approveRecommendation(recommendationId)
-AmbulanceCallCenter
-    ↓ revalidate + assign + create DispatchRecord
-AmbulanceDispatchFacade
-    ↓ DispatchBatchSnapshot
-DispatchController
-```
-
-The web layer therefore does not need to understand the internal dispatch transaction.
-
-### Facade Benefits
-
-The Facade provides several concrete benefits in this project:
-
-**Lower coupling.** `DispatchController` depends on one application-facing component instead of depending directly on every dispatch subsystem class.
-
-**Higher cohesion.** HTTP handling stays in the controller, application coordination stays in the Facade, domain rules stay in domain objects, and data-structure ownership stays in `AmbulanceCallCenter`.
-
-**Simpler testing.** Controller tests can verify delegation and web behavior without reconstructing the entire dispatch subsystem. Facade/application tests can verify use-case coordination separately.
-
-**Change isolation.** The implementation of CAD ranking, route estimation, or collection management can change without forcing the HTTP controller contract to change.
-
-**Clearer use-case API.** The public methods on the Facade correspond closely to meaningful user/system operations rather than low-level object manipulation.
-
-**Protection of invariants.** The controller cannot casually manipulate the queue, fleet map, available set, or dispatch records because those structures are not its responsibility.
 
 
 ## GRASP, SOLID, and Refactoring Analysis
 
 ### GRASP
 
-The design uses several GRASP principles to assign responsibilities.
-
-**Controller.** `AmbulanceDispatchFacade` acts as the GRASP Controller for dispatch-oriented system operations. The Spring MVC controller remains a web adapter, while the Facade coordinates the use case.
-
-**Information Expert.** `Ambulance` determines whether it is available and appropriate because it owns its status, duty status, capability, jurisdiction, location, and current assignment. `EmergencyCall` owns priority and response requirements. `EmergencyCallComparator` owns the ordering rule needed by the waiting-call queue. `AmbulanceCallCenter` owns cross-object state because it owns the collections that must remain consistent.
-
-**Low Coupling.** The web controller does not directly manipulate the priority queue, hash maps, ambulance lifecycle, recommendation service, or route provider. The Facade and provider interfaces reduce the number of direct dependencies between layers.
-
-**High Cohesion.** Each major component has a focused responsibility: the controller handles HTTP, the Facade coordinates use cases, the call center protects system state, the comparator orders calls, the CAD service ranks candidates, and domain entities protect their own behavior.
-
-**Creator.** `AmbulanceCallCenter` creates or commits recommendation/dispatch objects in the workflows where it already owns the related calls, ambulances, and collections. This keeps creation close to the information required to establish valid relationships.
-
-**Indirection.** `AmbulanceDispatchFacade` provides indirection between the MVC controller and the domain subsystem. `TravelEstimateProvider` and `RouteProvider` provide indirection between application logic and external routing technology.
-
-**Protected Variations.** Provider interfaces protect the core dispatch application from changes in external routing or travel-estimate technology. The rest of the application can depend on the abstraction rather than a specific vendor integration.
-
-**Pure Fabrication.** `CadRecommendationService` is a service object introduced to keep candidate-ranking responsibility cohesive rather than forcing that behavior into an entity that does not naturally own the entire recommendation process.
 
 ### SOLID
 
-**Single Responsibility Principle.** The design separates web handling, workflow coordination, queue ordering, candidate ranking, ambulance lifecycle behavior, and dispatch-state ownership. This is the strongest SOLID characteristic in the design.
 
-**Open/Closed Principle.** External travel or route behavior is accessed through provider abstractions. New provider implementations can be introduced without rewriting the domain objects that consume travel information.
-
-**Liskov Substitution Principle.** Provider implementations should be substitutable anywhere the application expects the provider interface, provided they honor the same behavioral contract. The interface boundary makes this substitutability possible.
-
-**Interface Segregation Principle.** Focused provider interfaces such as `TravelEstimateProvider` and `RouteProvider` prevent higher-level components from depending on one oversized external-service interface containing operations they do not need.
-
-**Dependency Inversion Principle.** Higher-level dispatch behavior depends on provider abstractions rather than depending directly on a concrete Google Routes implementation. This isolates infrastructure details from application policy.
-
-### Refactoring
-
-The current design reflects several important refactoring moves.
-
-**Fat Controller → Thin Controller + Facade.** Workflow logic is moved out of `DispatchController`, reducing the number of reasons the Spring controller would need to change.
-
-**Embedded ordering logic → `EmergencyCallComparator`.** Priority and FCFS tie-breaking are extracted into one explicit, testable ordering policy used by the priority queue.
-
-**Recommendation = Dispatch → Separate `DispatchRecommendation` and `DispatchRecord`.** A proposed ambulance assignment is no longer treated as if it were already committed. This makes the human approval step explicit in the model.
-
-**Direct external dependency → Provider interfaces.** Route and travel-estimate behavior are isolated behind abstractions, reducing infrastructure coupling.
-
-**Unprotected state mutation → Aggregate-owned invariants.** `AmbulanceCallCenter` owns the authoritative collections and performs revalidation before dispatch commitment, reducing the risk of stale or inconsistent state.
-
-**Single availability concept → Duty status + operational availability.** Separating ACTIVE/on-duty from AVAILABLE models the domain more accurately and prevents an ambulance that is staffed but already committed from being treated as dispatchable.
-
-**Scattered lifecycle checks → Guarded ambulance behavior.** Lifecycle transitions are enforced through ambulance operations so invalid state changes are rejected close to the object that owns the state.
-
-These refactorings improve readability, testability, maintainability, and traceability while reducing coupling and increasing cohesion.
 
 
 ## Data Structures Used
