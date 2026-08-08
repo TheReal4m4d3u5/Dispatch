@@ -226,15 +226,11 @@ In a real client engagement, I would ask whether dispatchers can override clinic
 
 ## UML and OOAD Artifact Analysis
 
-The UML artifacts are not separate drawings created only for documentation. Each artifact answers a different design question and progressively adds implementation detail.
 
 ### Domain Model
 
 
-
 <img width="743" height="508" alt="image" src="https://github.com/user-attachments/assets/2938d8c6-5c5f-4352-89e7-bc1727205e96" />
-
-
 
 
 
