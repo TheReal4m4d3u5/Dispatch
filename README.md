@@ -526,40 +526,10 @@ The project intentionally uses different data structures for different access pa
 
 ### Why a Priority Queue Instead of a Normal Queue
 
-A normal FIFO queue would provide `O(1)` enqueue/dequeue behavior, but it would encode the wrong business rule. FIFO means the first call received is always the first call removed. Emergency dispatch requires a later higher-priority emergency to move ahead of earlier lower-priority calls.
 
-The priority queue solves this by defining precedence as:
-
-```text
-1. Medical Priority
-2. arrivalSequence
-```
-
-Conceptually:
-
-```text
-CRITICAL, sequence 105
-CRITICAL, sequence 109
-HIGH,     sequence 101
-MEDIUM,   sequence 103
-LOW,      sequence 100
-```
-
-Even though the LOW call arrived first, it should not be dispatched before a later CRITICAL call. Among equal-priority calls, the lower `arrivalSequence` remains first.
 
 ### Why `arrivalSequence` Is Necessary
 
-A timestamp alone is not sufficient for deterministic FCFS ordering because two calls can share the same timestamp resolution. `arrivalSequence` gives every accepted call a monotonically ordered identity for queue precedence.
-
-The comparator can therefore preserve the business rule:
-
-```text
-Higher medical priority first
-        ↓ tie
-Smaller arrivalSequence first
-```
-
-This is stable from the application's perspective even though Java `PriorityQueue` itself does not promise stable ordering for elements that compare as exactly equal, because `arrivalSequence` prevents distinct queued calls from being equal under the intended precedence rule.
 
 
 ## Big-O Analysis
