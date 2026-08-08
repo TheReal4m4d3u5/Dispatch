@@ -6,86 +6,30 @@
 
 ## Description
 
-The Ambulance Call Center and Dispatch System is a Java 21 emergency medical dispatch application designed to demonstrate two primary software-engineering goals: **Spring Boot MVC architecture** and the purposeful use of **data structures and algorithms** inside a realistic dispatch domain.
 
-The application separates the user interface, HTTP/web layer, application coordination, domain behavior, and in-memory state. React acts as the dispatcher-facing view, Spring MVC `DispatchController` receives HTTP requests, `AmbulanceDispatchFacade` exposes coarse-grained application use cases, and the domain layer contains the objects and invariants that define emergency-call and ambulance behavior. `AmbulanceCallCenter` owns the authoritative in-memory state and coordinates the core collections used by the system.
-
-The primary design pattern is **Facade**. `AmbulanceDispatchFacade` provides the web layer with a small, stable set of dispatch operations such as recommending the next ambulance, approving a recommendation, overriding a recommendation, and acknowledging a dispatch. The Facade prevents the Spring MVC controller from directly coordinating the priority queue, ambulance registry, recommendation service, route/travel estimation, dispatch records, and domain invariants.
-
-The primary data structure is Java's `PriorityQueue<EmergencyCall>`, which is heap-backed. `EmergencyCallComparator` orders waiting calls first by medical `Priority` and then by `arrivalSequence`. This allows a later CRITICAL call to move ahead of an earlier lower-priority call while preserving first-come, first-served behavior for equal-priority calls. `arrivalSequence` also provides deterministic ordering when two calls have the same priority and timestamp.
-
-Additional collections support the rest of the application state: `HashMap` provides fast lookup of ambulances, recommendations, and active dispatches; `HashSet` tracks available ambulance identifiers; and `ArrayList` stores dispatch history. These structures were selected according to the operations the application performs most frequently rather than using one collection type for every responsibility.
-
-The dispatch workflow is human supervised. The CAD portion of the system identifies eligible ambulances and creates a `DispatchRecommendation`, but the Emergency Dispatcher reviews the recommendation and either approves it or selects another appropriate ambulance. The system revalidates the selected ambulance before committing a `DispatchRecord` so that a stale recommendation cannot create an invalid or duplicate assignment.
-
-The project also demonstrates a complete OOAD trace from requirements to implementation. It includes noun analysis, a domain model, use-case diagrams, detailed use-case scenarios, robustness analysis, sequence diagrams, a UML class diagram, BDD scenarios, TDD method traceability, and automated tests. Together, these artifacts explain not only **what** the application does, but **why the classes, data structures, MVC responsibilities, and design-pattern boundaries are arranged the way they are**.
 
 
 ## Problem
 
-An emergency dispatch center needs a consistent way to determine which EmergencyCall should be handled first and which Ambulance should respond.
 
-A simple first-come, first-served queue is not sufficient because a later CRITICAL EmergencyCall may need to be handled before an earlier LOW-priority EmergencyCall. At the same time, equal-priority calls still need to remain first come, first served. Two calls may also have the same Priority and the same timestamp, so the system needs another deterministic ordering value.
-
-The system must also distinguish between an Ambulance that is active/on duty and an Ambulance that is actually available. An Ambulance may be staffed and active but unavailable because it is already DISPATCHED, EN_ROUTE, ON_SCENE, TRANSPORTING, AT_HOSPITAL, REFUELING, in MAINTENANCE, or otherwise unable to accept another call.
-
-After selecting the next EmergencyCall, the system must determine which Ambulances are available and appropriate for that emergency. Clinical capability, jurisdiction, mutual-aid authorization, current Location, and travel time may all affect the recommendation. The Emergency Dispatcher must still be able to review and override the recommendation before the assignment becomes a confirmed Dispatch.
-
-The proposed system solves these problems by combining a stable PriorityQueue for waiting EmergencyCalls with a human-supervised CAD recommendation and dispatch workflow.
 
 
 ## Project Objectives
 
-This project is intentionally centered on two technical themes.
+
 
 ### 1. Demonstrate Spring Boot MVC
 
-The application demonstrates MVC by separating web concerns from application and domain concerns. The React interface presents dispatcher information and sends user actions to the backend. Spring MVC controllers translate HTTP requests into application calls. The Facade coordinates use cases. Domain objects enforce business rules and own state that belongs to the dispatch problem itself.
 
-The goal is not simply to use `@RestController`. The goal is to show that the controller remains thin because HTTP handling and domain behavior are different responsibilities.
 
 ### 2. Demonstrate Data Structures and Algorithm Analysis
 
-The application uses data structures because the dispatch problem requires different access and ordering behaviors:
-
-- A `PriorityQueue<EmergencyCall>` maintains priority-based waiting-call order.
-- A `HashMap<Integer, Ambulance>` provides direct ambulance lookup by identifier.
-- A `HashSet<Integer>` maintains fast membership checks for available ambulance identifiers.
-- A `HashMap<Integer, DispatchRecord>` provides direct lookup of active dispatches by ambulance.
-- A `HashMap<Long, DispatchRecommendation>` provides direct lookup of pending recommendations.
-- An `ArrayList<DispatchRecord>` maintains ordered dispatch history.
-
-The project documents the expected Big-O cost of the most important operations and explains why a heap-backed priority queue is better suited to the waiting-call problem than a normal FIFO queue or repeatedly sorting a list.
 
 ### 3. Demonstrate Object-Oriented Design and Refactoring
 
-The system uses GRASP and SOLID principles to keep responsibilities understandable. Refactoring decisions focused on reducing controller coupling, improving cohesion, extracting queue-ordering policy, separating recommendations from committed dispatch records, protecting domain invariants, and isolating external routing behavior behind provider interfaces.
+
 
 ### 4. Demonstrate Design Traceability
-
-The design artifacts show a progression from problem-domain understanding to implementation:
-
-```text
-Requirements
-    ↓
-Noun Analysis
-    ↓
-Domain Model
-    ↓
-Use-Case Diagram
-    ↓
-Use-Case Scenario
-    ↓
-Robustness Diagram
-    ↓
-Sequence Diagram
-    ↓
-Class Diagram
-    ↓
-Spring Boot MVC + Facade + Data Structures
-    ↓
-BDD / TDD / API / Architecture Tests
-```
 
 
 ## Table of Contents
@@ -171,27 +115,6 @@ BDD / TDD / API / Architecture Tests
 
 
 
-## Design Decision Log
-
-| Decision | Alternatives Considered | Rationale |
-|---|---|---|
-| Use PriorityQueue<EmergencyCall> for waiting EmergencyCalls. | Considered a normal FIFO Queue, a sorted List, and a custom MinHeap implementation. | A FIFO Queue cannot move a later CRITICAL call ahead of a lower-priority call. Java PriorityQueue already provides heap-backed priority behavior and satisfies the data-structure requirement without maintaining a separate production heap implementation. |
-| Use EmergencyCallComparator to define waiting-call precedence. | Considered placing all ordering logic directly inside EmergencyCall or sorting calls manually every time the next call was needed. | A dedicated comparator keeps queue-ordering rules in one cohesive class and makes the ordering policy explicit and testable. |
-| Use Priority first and arrivalSequence second. | Considered ordering only by Priority or only by timestamp. | Priority alone does not resolve equal-priority calls, while timestamp alone does not guarantee medical urgency. arrivalSequence preserves deterministic FCFS behavior even when timestamps are identical. |
-| Keep ACTIVE/on-duty separate from AVAILABLE. | Considered one boolean or one status representing both ideas. | An Ambulance can be staffed and active but already dispatched, transporting, refueling, or otherwise unable to accept another EmergencyCall. |
-| Use AmbulanceCallCenter as the aggregate root. | Considered allowing Controllers and services to manipulate the waiting queue, fleet map, available set, active Dispatch records, recommendations, and history directly. | AmbulanceCallCenter owns the major collections and can enforce cross-object invariants such as no double dispatch, consistent availability, and correct queue mutation. |
-| Use AmbulanceDispatchFacade as the application-level GRASP Controller. | Considered letting DispatchController coordinate AmbulanceCallCenter, CadRecommendationService, and RouteService directly. | The Facade keeps the MVC Controller thin and provides a focused application boundary for dispatch workflows. |
-| Keep DispatchController as a thin MVC Controller. | Considered placing queue logic, ambulance selection, revalidation, and dispatch mutation inside the Spring Controller. | The MVC Controller should receive HTTP requests and return responses, not own the business rules of dispatch. |
-| Use CadRecommendationService for candidate ranking. | Considered putting ranking behavior inside Ambulance, EmergencyCall, or DispatchController. | Ranking is a separate responsibility that evaluates candidate data and should not make domain entities or web Controllers unnecessarily broad. |
-| Use immutable CAD context for recommendation work. | Considered allowing CadRecommendationService to read and mutate live AmbulanceCallCenter state. | Immutable candidate snapshots reduce coupling and prevent external travel-estimate work from directly modifying authoritative domain state. |
-| Keep DispatchRecommendation separate from DispatchRecord. | Considered creating a DispatchRecord immediately when a recommendation is generated. | A recommendation is only a proposal. The actual Dispatch should not exist until the Emergency Dispatcher approves or overrides the recommendation and the system revalidates the Ambulance. |
-| Revalidate the Ambulance before committing the Dispatch. | Considered trusting the earlier recommendation without checking again. | An Ambulance may become unavailable between recommendation and confirmation. Revalidation prevents stale recommendations and double assignment. |
-| Keep Ambulance Crew acknowledgement as a separate use case. | Considered making acknowledgement the final step of Dispatch Ambulance. | The Emergency Dispatcher controls the dispatch-confirmation use case, while the Ambulance Crew performs a separate user goal after the assignment exists. |
-| Keep Hospital out of the Dispatch Ambulance sequence. | Considered including all domain entities on every diagram. | Hospital is not needed during initial dispatch and should only appear when a use case actually requires a transport destination. |
-| Group use cases into functional packages. | Considered one large use-case diagram containing every Emergency Dispatcher, Ambulance Crew, Fleet Supervisor, and Administrator action. | Functional grouping keeps diagrams understandable and avoids an oversized flat use-case list. |
-| Use TravelEstimateProvider and RouteProvider interfaces. | Considered depending directly on Google Routes from application services. | Provider interfaces isolate external technology and support Dependency Inversion and Protected Variations. |
-| Number only method calls on sequence diagrams. | Considered numbering returns, object values, loop labels, alt guards, and state descriptions. | Numbering only actual calls makes the sequence easier to trace to receiving class operations. |
-| Show return arrows only when they add value. | Considered showing a return for every method call. | Most return arrows add visual noise. Only returned values that are used later need to be shown. |
 
 
 ## UML and OOAD Artifact Analysis
@@ -673,6 +596,11 @@ Build the frontend:
 ```bash
 npm run build
 ```
+
+## Design Decision Log
+
+
+
 
 
 ## AI Usage
