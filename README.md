@@ -417,11 +417,7 @@ The project intentionally uses different data structures for different access pa
 | `HashMap<Long, DispatchRecommendation>` | `recommendationsById` | Allows a dispatcher approval or override request to locate the pending recommendation by recommendation ID. |
 | `ArrayList<DispatchRecord>` | `dispatchHistory` | Dispatch history is append-oriented and benefits from efficient ordered storage and indexed traversal. |
 
-### Why a Priority Queue Instead of a Normal Queue
 
-
-
-### Why `arrivalSequence` Is Necessary
 
 
 
