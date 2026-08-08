@@ -230,6 +230,13 @@ The UML artifacts are not separate drawings created only for documentation. Each
 
 ### Domain Model
 
+
+
+<img width="743" height="508" alt="image" src="https://github.com/user-attachments/assets/2938d8c6-5c5f-4352-89e7-bc1727205e96" />
+
+
+
+
 **Question answered:** What important concepts exist in the ambulance-dispatch problem domain, and how are they related?
 
 The domain model is intentionally technology-independent. It focuses on business concepts such as:
