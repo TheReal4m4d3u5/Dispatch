@@ -543,6 +543,10 @@ That expression assumes the emergency being committed is the root/next item in t
 This analysis demonstrates an important design lesson: Big-O should be applied to the operation actually being performed, not merely attached to the name of a data structure.
 
 
+## Design Decision Log
+
+
+
 ## Installation
 
 
@@ -597,7 +601,6 @@ Build the frontend:
 npm run build
 ```
 
-## Design Decision Log
 
 
 
