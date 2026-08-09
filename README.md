@@ -6,31 +6,40 @@
 
 ## Description
 
+This is an ambulance dispatch service. Emergenciy call need to be vetted, submmited and allocated. Ambulences are assigned when they are available. This deminstrates a computer-aided dispatch(CAD) system
+for an ambulance call center. 
+
+
+Backend is build out in spring boot and front end uses react. System use MVC architecure, a facade design pattern, and priority queue. 
+
+
+Every use case is decomposed into behaviors, each behavior is allocated to the domain entity that owns the relevant data, and each allocated behavior is traced through sequence diagrams to a BDD scenario and a unit test.
+
 
 
 
 ## Problem
 
+People need to call for an ambulance and get medical help to go to the hospital. The call center needs to be able to dispatch ambulences or request other government services. 
+Dispatch needs to be able to allocate emergency tickets out to ambulances. Ambulances must accept the emergecy. Emergecy tickets are put into a priority queue.   
 
 
 
 ## Project Objectives
 
-
-
 ### 1. Demonstrate Spring Boot MVC
-
+This project demistrates the mvc architecure. Specific methods are being used for view and controller. 
 
 
 ### 2. Demonstrate Data Structures and Algorithm Analysis
-
+A priority queue is being used for the queue. 
 
 ### 3. Demonstrate Object-Oriented Design and Refactoring
-
+Grasp and solid principles. 
 
 
 ### 4. Demonstrate Design Traceability
-
+All use cases are broken down into behaviros alocated to domain enties. All use cse are traced to sequence diagram. Then all bahaviors are traced to bdd test scenarios.  
 
 ## Table of Contents
 
@@ -109,7 +118,6 @@
 
 
 
-
 ## Assumptions and Open Questions
 
 
@@ -125,25 +133,19 @@
 
 <img width="743" height="508" alt="image" src="https://github.com/user-attachments/assets/2938d8c6-5c5f-4352-89e7-bc1727205e96" />
 
-
-
-
 ### Use-Case Scenario
-
-
-
-
-
-
-
-## Use Cases
 
 <img width="1100" height="867" alt="image" src="https://github.com/user-attachments/assets/b5f2b119-c0ee-4db9-af3c-48752537a533" />
 
-<img width="528" height="905" alt="image" src="https://github.com/user-attachments/assets/7571746e-a7ca-4a2a-a9b7-b765f6e79b6f" />
 
 
 ### Dispatch Ambulance
+
+
+![alt text](image.png)
+
+![alt text](image-1.png)
+
 
 
 ## Robustness Analysis
@@ -151,146 +153,18 @@
 <img width="854" height="783" alt="image" src="https://github.com/user-attachments/assets/10bcb2e6-f4e0-472d-b59b-914ca74e5fd5" />
 
 
-
-##
-
+## Sequence Diagram
 
 
+![alt text](image-3.png)
 
+![alt text](image-2.png)
+
+![alt text](image-4.png)
 
 
 ### Classes
 
-Class: AmbulanceCallCenter
-
-- waitingCalls : PriorityQueue<EmergencyCall>
-- fleetById : HashMap<Integer, Ambulance>
-- availableAmbulanceIds : HashSet<Integer>
-- activeDispatchesByAmbulanceId : HashMap<Integer, DispatchRecord>
-- recommendationsById : HashMap<Long, DispatchRecommendation>
-- dispatchHistory : ArrayList<DispatchRecord>
-- statistics : SystemStatisticsAccumulator
-
-+ cadRecommendationContext() : CadRecommendationContextSnapshot
-+ createRecommendation(callId : long, ambulanceId : int, estimate : TravelEstimate) : DispatchRecommendationSnapshot
-+ approveRecommendation(recommendationId : long) : DispatchBatchSnapshot
-+ overrideRecommendation(recommendationId : long, ambulanceId : int, reason : String) : DispatchBatchSnapshot
-+ acknowledgeDispatch(ambulanceId : int) : AmbulanceOperationSnapshot
-+ boardSnapshot() : BoardSnapshot
-+ statisticsSnapshot() : StatisticsSnapshot
-
-Class: EmergencyCall
-
-- callId : long
-- currentPriority : Priority
-- location : Location
-- requiredCapability : ClinicalCapability
-- jurisdiction : String
-- mutualAidAllowed : boolean
-- arrivalSequence : long
-
-+ getCurrentPriority() : Priority
-+ getLocation() : Location
-+ getRequiredCapability() : ClinicalCapability
-+ getJurisdiction() : String
-+ isMutualAidAllowed() : boolean
-
-Class: EmergencyCallComparator
-
-+ compare(left : EmergencyCall, right : EmergencyCall) : int
-
-Class: Ambulance
-
-- ambulanceId : int
-- name : String
-- location : Location
-- status : AmbulanceStatus
-- dutyStatus : DutyStatus
-- capability : ClinicalCapability
-- jurisdiction : String
-- activeCall : EmergencyCall
-
-+ getAmbulanceId() : int
-+ getName() : String
-+ getLocation() : Location
-+ getStatus() : AmbulanceStatus
-+ getDutyStatus() : DutyStatus
-+ getCapability() : ClinicalCapability
-+ getJurisdiction() : String
-+ isAvailable() : boolean
-+ isActiveOnDuty() : boolean
-+ isAppropriateFor(requiredCapability : ClinicalCapability, requiredJurisdiction : String, mutualAidAllowed : boolean) : boolean
-+ assignTo(call : EmergencyCall, at : Instant) : void
-+ acknowledgeDispatch(at : Instant) : void
-+ snapshot() : AmbulanceSnapshot
-
-Class: DispatchRecommendation
-
-- recommendationId : long
-- callId : long
-- recommendedAmbulanceId : int
-- travelEstimate : TravelEstimate
-- createdAt : Instant
-
-+ recommendationId() : long
-+ callId() : long
-+ recommendedAmbulanceId() : int
-+ travelEstimate() : TravelEstimate
-+ createdAt() : Instant
-
-Class: DispatchRecord
-
-- dispatchId : long
-- call : EmergencyCall
-- ambulanceId : int
-- recommendedAmbulanceId : int
-- dispatchedAt : Instant
-- dispatcherOverride : boolean
-- overrideReason : String
-- acknowledgedAt : Instant
-- arrivedOnSceneAt : Instant
-- transportStartedAt : Instant
-- arrivedAtHospitalAt : Instant
-- completedAt : Instant
-
-+ getDispatchId() : long
-+ getCall() : EmergencyCall
-+ getAmbulanceId() : int
-+ getRecommendedAmbulanceId() : int
-+ getDispatchedAt() : Instant
-+ canRecordAcknowledgement(at : Instant) : boolean
-+ recordAcknowledged(at : Instant) : void
-+ snapshot() : DispatchSnapshot
-
-Class: Location
-
-- latitude : double
-- longitude : double
-
-+ distanceTo(other : Location) : double
-+ squaredDistanceTo(other : Location) : double
-
-Class: AmbulanceDispatchFacade
-
-+ recommendNext() : DispatchRecommendationSnapshot
-+ approveRecommendation(recommendationId : long) : DispatchBatchSnapshot
-+ overrideRecommendation(recommendationId : long, ambulanceId : int, reason : String) : DispatchBatchSnapshot
-+ acknowledgeDispatch(ambulanceId : int) : AmbulanceOperationSnapshot
-
-Class: CadRecommendationService
-
-+ recommend(context : CadRecommendationContextSnapshot) : CadRecommendationDecision
-
-Class: DispatchController
-
-+ recommendNext()
-+ approve(recommendationId)
-+ override(recommendationId, request)
-
-Class: DispatchWebMapper
-
-+ toRecommendationResponse(snapshot)
-+ toDispatchBatchResponse(snapshot)
 
 
 ## Application Flow
@@ -301,71 +175,6 @@ Class: DispatchWebMapper
 
 
 
-### BDD Scenarios
-
-Feature: Stable emergency call ordering
-
-Scenario: Priority is considered before first come first served  
-  Given multiple EmergencyCalls are waiting  
-  When the calls have different Priority values  
-  Then the system handles the higher medical Priority first  
-
-Scenario: Equal-priority calls remain first come first served  
-  Given two EmergencyCalls have the same Priority  
-  When the calls are received in different arrival order  
-  Then the call with the smaller arrivalSequence remains first  
-
-Scenario: Same timestamp still preserves deterministic ordering  
-  Given two EmergencyCalls have the same Priority and timestamp  
-  When both calls are inserted into the waiting queue  
-  Then arrivalSequence determines which call is handled first  
-
-
-Feature: CAD ambulance recommendation
-
-Scenario: Dispatcher approves the CAD recommendation  
-  Given an EmergencyCall is waiting for dispatch  
-  And an appropriate Ambulance is available  
-  When the system recommends the Ambulance  
-  And the Emergency Dispatcher approves the recommendation  
-  Then the Ambulance is assigned to the EmergencyCall  
-  And the system creates a DispatchRecord  
-
-Scenario: No eligible ambulance keeps the call waiting  
-  Given an EmergencyCall is waiting for dispatch  
-  And no Ambulance satisfies the response requirements  
-  When the Emergency Dispatcher requests a recommendation  
-  Then the EmergencyCall remains waiting  
-
-Scenario: Dispatcher overrides the recommendation  
-  Given the system has recommended an Ambulance  
-  And another appropriate Ambulance is available  
-  When the Emergency Dispatcher selects the alternate Ambulance  
-  Then the system revalidates the alternate Ambulance  
-  And the system records the override when the Dispatch is committed  
-
-
-Feature: Guarded ambulance lifecycle
-
-Scenario: Crew acknowledges a dispatch before responding  
-  Given an Ambulance has a committed Dispatch  
-  When the Ambulance Crew acknowledges the Dispatch  
-  Then the system records the acknowledgement  
-  And the Ambulance transitions from DISPATCHED to EN_ROUTE  
-
-Scenario: Crew cannot begin transport before arriving on scene  
-  Given the Ambulance has not reached the emergency scene  
-  When the Ambulance Crew attempts to begin transport  
-  Then the system rejects the illegal transition  
-
-Scenario: Complete an emergency without transport  
-  Given the Ambulance Crew is ON_SCENE  
-  When the crew completes the emergency without patient transport  
-  Then the system records the no-transport completion  
-  And the Ambulance begins returning to service  
-
-
-## TDD Traceability to Methods
 
 
 
@@ -373,6 +182,7 @@ Scenario: Complete an emergency without transport
 
 
 ### View
+
 
 
 
@@ -408,7 +218,6 @@ Scenario: Complete an emergency without transport
 
 
 ### SOLID
-
 
 
 
@@ -546,6 +355,39 @@ O(a + log n)
 That expression assumes the emergency being committed is the root/next item in the priority queue and candidate selection is implemented as a linear best-choice scan. If the code searches for an arbitrary waiting call or sorts all ambulance candidates, the bound changes accordingly.
 
 This analysis demonstrates an important design lesson: Big-O should be applied to the operation actually being performed, not merely attached to the name of a data structure.
+
+
+
+
+
+
+
+
+
+### Testing 
+
+### BDD Scenarios
+
+Sunny 
+Rainy day 
+Zero
+One
+Many
+Bounary behaviors
+Interface definitions
+Exerise exceptional behavior 
+Negative test cases
+Edge cases 
+
+
+
+## TDD Traceability to Methods
+
+
+
+
+
+
 
 
 ## Design Decision Log
