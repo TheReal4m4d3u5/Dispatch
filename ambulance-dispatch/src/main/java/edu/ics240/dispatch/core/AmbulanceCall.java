@@ -2,161 +2,198 @@ package edu.ics240.dispatch.core;
 
 import java.time.Instant;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Represents one emergency call received by the ambulance call center.
- *
- * AmbulanceCall is immutable because its priority and arrival sequence
- * determine its position inside the waiting-call min heap.
+ * AmbulanceCall domain entity (complete enough for comparator, queueing and basic dispatch).
+ * Keep domain rules here; persistence mapping is handled elsewhere.
  */
-public final class AmbulanceCall {
+public class AmbulanceCall {
 
-    private final long callId;
-    private final String callerName;
-    private final String description;
-    private final Priority priority;
-    private final Location location;
-    private final Instant receivedAt;
+    private static final AtomicLong SEQUENCE_GENERATOR = new AtomicLong(1);
+
+    private final long id;
     private final long arrivalSequence;
+    private CallState state;
+    private Priority priority;
+    private String requiredCapability;
+    private String jurisdiction;
+    private boolean requiresDispatch;
+    private Location location;
+    private Instant createdAt;
+    private Long assignedAmbulanceId; // nullable: which ambulance was assigned
+    private Instant dispatchedAt;     // nullable: when the ambulance was dispatched
+
+    public AmbulanceCall(long id, Location location, String jurisdiction) {
+        this.id = id;
+        this.location = location;
+        this.jurisdiction = jurisdiction;
+        this.state = CallState.NEW;
+        this.createdAt = Instant.now();
+        this.arrivalSequence = SEQUENCE_GENERATOR.getAndIncrement();
+        this.requiresDispatch = false;
+    }
+
+
+
+	public long getId() {
+        return id;
+    }
 
     /**
-     * Creates an immutable emergency call.
-     *
-     * @param callId          unique positive call identifier
-     * @param callerName      name of the caller
-     * @param description     description of the emergency
-     * @param priority        emergency priority
-     * @param location        location of the emergency
-     * @param receivedAt      time the call was received
-     * @param arrivalSequence monotonic FCFS sequence
+     * Monotonic arrival sequence used for deterministic ordering.
      */
-    public AmbulanceCall(
-            long callId,
-            String callerName,
-            String description,
-            Priority priority,
-            Location location,
-            Instant receivedAt,
-            long arrivalSequence) {
-
-        if (callId <= 0) {
-            throw new IllegalArgumentException(
-                    "Call ID must be positive"
-            );
-        }
-
-        if (arrivalSequence < 0) {
-            throw new IllegalArgumentException(
-                    "Arrival sequence cannot be negative"
-            );
-        }
-
-        this.callId = callId;
-        this.callerName = requireText(
-                callerName,
-                "Caller name"
-        );
-        this.description = requireText(
-                description,
-                "Description"
-        );
-        this.priority = Objects.requireNonNull(
-                priority,
-                "Priority cannot be null"
-        );
-        this.location = Objects.requireNonNull(
-                location,
-                "Location cannot be null"
-        );
-        this.receivedAt = Objects.requireNonNull(
-                receivedAt,
-                "Received time cannot be null"
-        );
-        this.arrivalSequence = arrivalSequence;
+    public long getArrivalSequence() {
+        return arrivalSequence;
     }
 
-    public long getCallId() {
-        return callId;
-    }
-
-    public String getCallerName() {
-        return callerName;
-    }
-
-    public String getDescription() {
-        return description;
+    public CallState getState() {
+        return state;
     }
 
     public Priority getPriority() {
         return priority;
     }
 
+    public String getRequiredCapability() {
+        return requiredCapability;
+    }
+
+    public String getJurisdiction() {
+        return jurisdiction;
+    }
+
+    public boolean isReadyForDispatch() {
+        return state == CallState.READY_FOR_DISPATCH;
+    }
+    
+    public boolean isRequiresDispatch() {
+        return requiresDispatch;
+    }
+
     public Location getLocation() {
         return location;
     }
 
-    public Instant getReceivedAt() {
-        return receivedAt;
+    public Instant getCreatedAt() {
+        return createdAt;
     }
 
-    public long getArrivalSequence() {
-        return arrivalSequence;
+    public Long getAssignedAmbulanceId() {
+        return assignedAmbulanceId;
+    }
+
+    public Instant getDispatchedAt() {
+        return dispatchedAt;
+    }
+
+    // -------------------------
+    // Domain behavior
+    // -------------------------
+
+    /**
+     * Complete evaluation of the call: set priority, capability, jurisdiction and whether dispatch is required.
+     * This method models the domain decision that determines if the call should enter the waiting queue.
+     */
+    public void completeEvaluation(Priority priority,
+                                   String requiredCapability,
+                                   String jurisdiction,
+                                   boolean requiresDispatch) {
+        this.priority = priority;
+        this.requiredCapability = requiredCapability;
+        this.jurisdiction = jurisdiction;
+        this.requiresDispatch = requiresDispatch;
+        if (requiresDispatch) {
+            this.state = CallState.READY_FOR_DISPATCH;
+        } else {
+            this.state = CallState.EVALUATED;
+        }
     }
 
     /**
-     * Creates a replacement call with a different priority.
-     *
-     * The original call ID, timestamp, and arrival sequence are
-     * preserved. This prevents escalation from resetting the call's
-     * first-come-first-served position among calls of the same priority.
-     *
-     * The call center must remove the original call from the heap before
-     * inserting the replacement.
-     *
-     * @param newPriority replacement priority
-     * @return a new immutable AmbulanceCall
+     * Mark the call ready for dispatch (explicit domain intent).
      */
-    public AmbulanceCall withPriority(
-            Priority newPriority) {
-
-        Objects.requireNonNull(
-                newPriority,
-                "New priority cannot be null"
-        );
-
-        return new AmbulanceCall(
-                callId,
-                callerName,
-                description,
-                newPriority,
-                location,
-                receivedAt,
-                arrivalSequence
-        );
+    public void markReadyForDispatch() {
+        this.requiresDispatch = true;
+        this.state = CallState.READY_FOR_DISPATCH;
     }
 
-    private static String requireText(
-            String value,
-            String fieldName) {
-
-        if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException(
-                    fieldName + " cannot be blank"
-            );
+    /**
+     * Cancel the dispatch requirement and remove from any queue.
+     */
+    public void cancelDispatchRequirement() {
+        this.requiresDispatch = false;
+        if (this.state == CallState.READY_FOR_DISPATCH) {
+            this.state = CallState.EVALUATED;
         }
+    }
+    
+    
 
-        return value.trim();
+
+
+    /**
+     * Assign an ambulance to this call by ambulance id.
+     * Keep this method for callers that only have the id.
+     */
+    public void assignTo(long ambulanceId) {
+        this.assignedAmbulanceId = ambulanceId;
+        this.dispatchedAt = Instant.now();
+        this.state = CallState.ASSIGNED;
+        this.requiresDispatch = false;
+    }
+
+    /**
+     * Overloaded assignTo that accepts an Ambulance domain object and an explicit dispatch time.
+     * Use this when the caller has the Ambulance instance and a specific dispatch timestamp.
+     */
+    public void assignTo(Ambulance ambulance, Instant dispatchedAt) {
+        if (ambulance == null) {
+            throw new IllegalArgumentException("ambulance must not be null");
+        }
+        this.assignedAmbulanceId = ambulance.getId();
+        this.dispatchedAt = dispatchedAt;
+        this.state = CallState.ASSIGNED;
+        this.requiresDispatch = false;
+    }
+
+    /**
+     * Unassign ambulance (e.g., lease expired or assignment cancelled).
+     */
+    public void unassign() {
+        this.assignedAmbulanceId = null;
+        this.dispatchedAt = null;
+        this.state = CallState.EVALUATED;
+    }
+
+    // -------------------------
+    // Utility
+    // -------------------------
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AmbulanceCall)) return false;
+        AmbulanceCall that = (AmbulanceCall) o;
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     @Override
     public String toString() {
-        return "AmbulanceCall{"
-                + "callId=" + callId
-                + ", callerName='" + callerName + '\''
-                + ", priority=" + priority
-                + ", location=" + location
-                + ", receivedAt=" + receivedAt
-                + ", arrivalSequence=" + arrivalSequence
-                + '}';
+        return "AmbulanceCall{" +
+                "id=" + id +
+                ", arrivalSequence=" + arrivalSequence +
+                ", state=" + state +
+                ", priority=" + priority +
+                ", jurisdiction='" + jurisdiction + '\'' +
+                ", requiresDispatch=" + requiresDispatch +
+                ", assignedAmbulanceId=" + assignedAmbulanceId +
+                ", dispatchedAt=" + dispatchedAt +
+                '}';
     }
 }

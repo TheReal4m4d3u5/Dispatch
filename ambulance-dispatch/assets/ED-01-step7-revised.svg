@@ -1,0 +1,213 @@
+<svg viewBox="0 0 1400 1110" width="1400" height="1110" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Helvetica, Arial, sans-serif" role="img">
+<title>ED-01 Step 7 revised sequence diagram</title>
+<desc>Revised UML sequence diagram for ED-01 Step 7: the three final checks collapse into a single guarded atomic transition on assignTo, the only failable operation runs first, the call is marked dispatched and dequeued, and crew notification is deferred until after commit.</desc>
+
+<defs>
+<marker id="s7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M 0 0 L 10 5 L 0 10 z" fill="#1f1f1d"/>
+</marker>
+<marker id="s7a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M 0 0 L 10 5 L 0 10 z" fill="#c15f3c"/>
+</marker>
+<marker id="o7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+<path d="M 0 0 L 10 5 L 0 10" fill="none" stroke="#6b6b66" stroke-width="1.4"/>
+</marker>
+<marker id="o7a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+<path d="M 0 0 L 10 5 L 0 10" fill="none" stroke="#c15f3c" stroke-width="1.4"/>
+</marker>
+</defs>
+
+<style>
+.hdr{fill:#f0efe9;stroke:#d4d2c8;stroke-width:1}
+.hn{font-size:10px;font-weight:600;fill:#1f1f1d;text-anchor:middle}
+.hs{font-size:8.5px;fill:#6b6b66;text-anchor:middle}
+.ll{stroke:#d4d2c8;stroke-width:1;stroke-dasharray:4 4}
+.act{fill:#f0efe9;stroke:#6b6b66;stroke-width:1}
+.m{stroke:#1f1f1d;stroke-width:1.3;fill:none}
+.ma{stroke:#c15f3c;stroke-width:1.6;fill:none}
+.r{stroke:#6b6b66;stroke-width:1.1;fill:none;stroke-dasharray:5 3}
+.ra{stroke:#c15f3c;stroke-width:1.2;fill:none;stroke-dasharray:5 3}
+.l{font-size:9.5px;fill:#1f1f1d;text-anchor:middle}
+.la{font-size:9.5px;fill:#c15f3c;font-weight:600;text-anchor:middle}
+.frag{fill:none;stroke:#c15f3c;stroke-width:1.1}
+.fragn{fill:none;stroke:#6b6b66;stroke-width:1.1}
+.ft{fill:#f0efe9;stroke:#c15f3c;stroke-width:1.1}
+.ftn{fill:#f0efe9;stroke:#6b6b66;stroke-width:1.1}
+.fl{font-size:9px;font-weight:700;fill:#c15f3c}
+.fln{font-size:9px;font-weight:700;fill:#6b6b66}
+.g{font-size:9px;font-style:italic;fill:#c15f3c}
+.gn{font-size:9px;font-style:italic;fill:#6b6b66}
+.note{fill:#f0efe9;stroke:#d4d2c8;stroke-width:1}
+.band{fill:#f0efe9;stroke:#c15f3c;stroke-width:1.4}
+.nt{font-size:9px;fill:#6b6b66}
+.ttl{font-size:14px;font-weight:700;fill:#1f1f1d}
+.sub{font-size:10.5px;fill:#6b6b66}
+</style>
+
+<rect x="0" y="0" width="1400" height="1110" fill="#ffffff"/>
+
+<text class="ttl" x="14" y="20">ED-01 STEP 7 (revised) — Dispatcher Confirms Dispatch</text>
+<text class="sub" x="14" y="35">Accent = changed. Checking immediately before mutating is not the same as mutating atomically.</text>
+
+<circle cx="60" cy="55" r="6" fill="none" stroke="#1f1f1d" stroke-width="1.2"/>
+<path d="M60 61 v14 M52 66 h16 M60 75 l-7 10 M60 75 l7 10" stroke="#1f1f1d" stroke-width="1.2" fill="none"/>
+<text class="hn" x="60" y="99">Dispatcher</text>
+
+<rect class="hdr" x="117" y="44" width="136" height="42" rx="3"/>
+<text class="hn" x="185" y="62">Dispatch-</text><text class="hn" x="185" y="73">Workspace</text><text class="hs" x="185" y="83">«boundary»</text>
+
+<rect class="hdr" x="267" y="44" width="136" height="42" rx="3"/>
+<text class="hn" x="335" y="62">Dispatch-</text><text class="hn" x="335" y="73">Controller</text><text class="hs" x="335" y="83">«control»</text>
+
+<rect class="hdr" x="427" y="44" width="136" height="42" rx="3"/>
+<text class="hn" x="495" y="62">AmbulanceDispatch-</text><text class="hn" x="495" y="73">Facade</text><text class="hs" x="495" y="83">«app facade»</text>
+
+<rect class="hdr" x="602" y="44" width="136" height="42" rx="3"/>
+<text class="hn" x="670" y="62">AmbulanceCall-</text><text class="hn" x="670" y="73">Center</text><text class="hs" x="670" y="83">«commit boundary»</text>
+
+<rect class="hdr" x="782" y="44" width="136" height="42" rx="3"/>
+<text class="hn" x="850" y="62">DispatchRecom-</text><text class="hn" x="850" y="73">mendation</text><text class="hs" x="850" y="83">«entity»</text>
+
+<rect class="hdr" x="942" y="44" width="136" height="42" rx="3"/>
+<text class="hn" x="1010" y="68">AmbulanceCall</text><text class="hs" x="1010" y="80">«entity»</text>
+
+<rect class="hdr" x="1092" y="44" width="136" height="42" rx="3"/>
+<text class="hn" x="1160" y="68">Ambulance</text><text class="hs" x="1160" y="80">«entity»</text>
+
+<rect class="hdr" x="1242" y="44" width="136" height="42" rx="3"/>
+<text class="hn" x="1310" y="68">DispatchRecord</text><text class="hs" x="1310" y="80">«entity»</text>
+
+<line class="ll" x1="60" y1="104" x2="60" y2="890"/>
+<line class="ll" x1="185" y1="86" x2="185" y2="890"/>
+<line class="ll" x1="335" y1="86" x2="335" y2="890"/>
+<line class="ll" x1="495" y1="86" x2="495" y2="890"/>
+<line class="ll" x1="670" y1="86" x2="670" y2="890"/>
+<line class="ll" x1="850" y1="86" x2="850" y2="890"/>
+<line class="ll" x1="1010" y1="86" x2="1010" y2="890"/>
+<line class="ll" x1="1160" y1="86" x2="1160" y2="890"/>
+<line class="ll" x1="1310" y1="86" x2="1310" y2="890"/>
+
+<rect class="act" x="180" y="118" width="10" height="570"/>
+<rect class="act" x="330" y="142" width="10" height="520"/>
+<rect class="act" x="490" y="166" width="10" height="474"/>
+<rect class="act" x="665" y="190" width="10" height="428"/>
+<rect class="act" x="845" y="314" width="10" height="20"/>
+<rect class="act" x="1005" y="484" width="10" height="16"/>
+<rect class="act" x="1155" y="382" width="10" height="20"/>
+<rect class="act" x="1305" y="512" width="10" height="16"/>
+
+<line class="ma" x1="68" y1="118" x2="178" y2="118" marker-end="url(#s7a)"/>
+<text class="la" x="123" y="112">42. confirmDispatch(recommendationId)</text>
+
+<line class="m" x1="195" y1="142" x2="328" y2="142" marker-end="url(#s7)"/>
+<text class="l" x="261" y="136">43. confirmDispatch(...)</text>
+
+<line class="m" x1="345" y1="166" x2="488" y2="166" marker-end="url(#s7)"/>
+<text class="l" x="416" y="160">44. confirmDispatch(...)</text>
+
+<line class="ma" x1="505" y1="190" x2="663" y2="190" marker-end="url(#s7a)"/>
+<text class="la" x="584" y="184">45. confirmDispatch(recommendationId)</text>
+<text class="g" x="690" y="190">selectedAmbulanceId dropped — STEP 6 and STEP 7 can no longer disagree about which unit</text>
+
+<rect class="band" x="560" y="204" width="820" height="16" rx="3"/>
+<text class="g" x="970" y="216" text-anchor="middle" font-weight="700">TRANSACTION BEGIN — all six mutations below commit together or not at all</text>
+
+<path class="m" d="M675 232 h40 v18 h-38" marker-end="url(#s7)"/>
+<text class="l" x="722" y="237" text-anchor="start">46. getRecommendation(recommendationId)</text>
+
+<rect class="frag" x="540" y="262" width="700" height="40" rx="2"/>
+<path class="ft" d="M540 262 h66 v12 l-8 8 H540 z"/>
+<text class="fl" x="547" y="273">break</text>
+<text class="g" x="612" y="273">[ not found ] — already dispatched, or superseded by ALT 6A</text>
+<line class="ra" x1="663" y1="293" x2="507" y2="293" marker-end="url(#o7a)"/>
+<text class="la" x="585" y="288">existing DispatchRecord</text>
+<text class="g" x="690" y="293">idempotent: a double-click returns the record, not an error</text>
+
+<line class="m" x1="675" y1="320" x2="843" y2="320" marker-end="url(#s7)"/>
+<text class="l" x="759" y="314">47. getCall() / getSelectedAmbulance()</text>
+<line class="r" x1="843" y1="336" x2="677" y2="336" marker-end="url(#o7)"/>
+<text class="l" x="759" y="331">AmbulanceCall, Ambulance</text>
+
+<line class="ma" x1="675" y1="388" x2="1153" y2="388" marker-end="url(#s7a)"/>
+<text class="la" x="914" y="382">48. assignTo(call, dispatchedAt)  —  GUARDED ATOMIC TRANSITION</text>
+<line class="ra" x1="1153" y1="404" x2="677" y2="404" marker-end="url(#o7a)"/>
+<text class="la" x="914" y="399">accepted / rejected</text>
+
+<rect class="frag" x="1000" y="344" width="380" height="34" rx="4" stroke-dasharray="5 3" stroke-width="1.4"/>
+<text class="g" x="1010" y="357" font-weight="700">This call IS the check.</text>
+<text class="g" x="1010" y="369">Compare-and-set on state == AVAILABLE. No window to lose.</text>
+
+<rect class="frag" x="540" y="416" width="840" height="56" rx="2"/>
+<path class="ft" d="M540 416 h66 v12 l-8 8 H540 z"/>
+<text class="fl" x="547" y="427">break</text>
+<text class="g" x="612" y="427">[ transition rejected ] — ALT 7B: nothing has mutated yet, so nothing to undo</text>
+<line class="m" x1="675" y1="446" x2="1153" y2="446" marker-end="url(#s7)"/>
+<text class="l" x="914" y="440">isDispatchable() / isReadyForDispatch()  — run only NOW, to explain the failure</text>
+<line class="ra" x1="663" y1="464" x2="507" y2="464" marker-end="url(#o7a)"/>
+<text class="la" x="585" y="459">DISPATCH_REJECTED + reason</text>
+
+<line class="ma" x1="675" y1="490" x2="1003" y2="490" marker-end="url(#s7a)"/>
+<text class="la" x="839" y="484">49. markDispatched()  — never called in v1; the call's own state was left behind</text>
+
+<line class="ma" x1="675" y1="518" x2="1303" y2="518" marker-end="url(#s7a)"/>
+<text class="la" x="989" y="512">50. «create» DispatchRecord(call, ambulance, dispatchedAt)</text>
+
+<path class="ma" d="M675 540 h40 v18 h-38" marker-end="url(#s7a)"/>
+<text class="la" x="722" y="545" text-anchor="start">51. waitingCalls.remove(call)  — the dispatched call must leave the queue</text>
+
+<path class="m" d="M675 576 h40 v18 h-38" marker-end="url(#s7)"/>
+<text class="l" x="722" y="581" text-anchor="start">52. removeRecommendation(recommendationId)</text>
+
+<path class="m" d="M675 604 h40 v14 h-38" marker-end="url(#s7)"/>
+<text class="l" x="722" y="609" text-anchor="start">53. recordDispatch(dispatchRecord) to activeDispatches</text>
+
+<rect class="band" x="560" y="628" width="820" height="16" rx="3"/>
+<text class="g" x="970" y="640" text-anchor="middle" font-weight="700">TRANSACTION COMMIT</text>
+
+<line class="r" x1="663" y1="660" x2="507" y2="660" marker-end="url(#o7)"/>
+<text class="l" x="585" y="655">54. DispatchRecord</text>
+
+<line class="r" x1="488" y1="684" x2="347" y2="684" marker-end="url(#o7)"/>
+<text class="l" x="417" y="679">55. DispatchRecord</text>
+
+<line class="r" x1="328" y1="708" x2="197" y2="708" marker-end="url(#o7)"/>
+<text class="l" x="262" y="703">56. DispatchRecord</text>
+
+<rect class="ft" x="600" y="722" width="640" height="26" rx="3"/>
+<path class="ft" d="M600 722 h38 v10 l-8 8 H600 z"/>
+<text class="fl" x="607" y="732">ref</text>
+<text class="la" x="920" y="740">STEP 8 — notify crew AFTER commit, via a durable outbox. Never inside this transaction.</text>
+
+<rect class="frag" x="40" y="768" width="1340" height="112" rx="2"/>
+<path class="ft" d="M40 768 h56 v12 l-8 8 H40 z"/>
+<text class="fl" x="47" y="779">alt</text>
+<text class="g" x="100" y="779">ALT 7A — dispatcher does not confirm (alternative to 42-56; boundary chain identical, shown collapsed)</text>
+
+<line class="m" x1="68" y1="800" x2="178" y2="800" marker-end="url(#s7)"/>
+<text class="l" x="123" y="794">42. cancelRecommendation(recommendationId)</text>
+
+<line class="m" x1="195" y1="824" x2="663" y2="824" marker-end="url(#s7)"/>
+<text class="l" x="429" y="818">43-45. cancelRecommendation(recommendationId) — Workspace to Controller to Facade to CallCenter</text>
+
+<path class="ma" d="M675 840 h40 v18 h-38" marker-end="url(#s7a)"/>
+<text class="la" x="722" y="845" text-anchor="start">46. releaseLease(call)  — NEW: without this the call sits leased and invisible until the lease lapses</text>
+
+<path class="m" d="M675 866 h40 v12 h-38" marker-end="url(#s7)"/>
+<text class="l" x="722" y="871" text-anchor="start">47. removeRecommendation(recommendationId)   —   call stays in waitingCalls at its original priority; Ambulance untouched; no DispatchRecord</text>
+
+<rect class="note" x="14" y="896" width="1372" height="200" rx="4"/>
+<text class="nt" x="26" y="914" font-weight="700" fill="#1f1f1d">What changed</text>
+<text class="nt" x="26" y="931">1  The three final checks are gone as separate calls, folded into assignTo(). Your comment says the facade "should ensure the state is checked immediately before mutation" — but immediately</text>
+<text class="nt" x="26" y="943">     before is not atomically with. Between isDispatchable() returning true at message 33 and assignTo() executing at 36 sit two more calls. Another thread can commit the same unit in that gap.</text>
+<text class="nt" x="26" y="955">     Microseconds instead of the v2.0 doc's 3 seconds, but still a window — and a narrow race fails only under peak load, which in EMS is exactly when it must not.</text>
+<text class="nt" x="26" y="972">2  Your spec already assigns assignTo() the job of "enforcing the ambulance lifecycle rules." Let it. A compare-and-set on state == AVAILABLE makes the check and the mutation one</text>
+<text class="nt" x="26" y="984">     indivisible act, so there is no interval to lose. The is*() predicates then run only on rejection, to say why — check on failure, not before it.</text>
+<text class="nt" x="26" y="1001">3  Failable operation first. assignTo() is the only step that can be refused, so it runs before anything mutates. The rejection path then has nothing to roll back.</text>
+<text class="nt" x="26" y="1018">4  AmbulanceCall.markDispatched() is declared in your class spec and listed in your own confirmDispatch responsibilities as "call state transition" — but no message in v1 ever calls it.</text>
+<text class="nt" x="26" y="1035">5  The dispatched call is now removed from waitingCalls. v1's message 33 removes the recommendation, not the call, so a unit could be en route to an emergency still sitting in the queue.</text>
+<text class="nt" x="26" y="1052">6  Open architectural question: activeDispatches, recommendations and waitingCalls are in-memory collections. A @Transactional rollback will not undo a Map.put or a queue removal. If</text>
+<text class="nt" x="26" y="1064">     assignTo() succeeds and DispatchRecord creation then throws, you get a DISPATCHED ambulance with no record — a unit invisible to the system and committed to a call nothing tracks.</text>
+<text class="nt" x="26" y="1076">     Either move this state somewhere transactional or write explicit compensating actions. This is the one unresolved risk in ED-01 that the design cannot answer as drawn.</text>
+<text class="nt" x="26" y="1091" font-style="italic">7  ALT 7A was already correct — call stays waiting, ambulance untouched, no record. It only needs the lease released, or the call is invisible to other dispatchers until the lease times out.</text>
+
+</svg>

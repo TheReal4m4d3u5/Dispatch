@@ -1,0 +1,178 @@
+<svg viewBox="0 0 1320 910" width="1320" height="910" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Helvetica, Arial, sans-serif" role="img">
+<title>ED-01 Step 2 revised sequence diagram</title>
+<desc>Revised UML sequence diagram for ED-01 Step 2: peek with visibility lease, availability-narrowed eligibility loop with short-circuit, explicit boolean returns, and an alternative flow for an empty eligible set.</desc>
+
+<defs>
+<marker id="s2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M 0 0 L 10 5 L 0 10 z" fill="#1f1f1d"/>
+</marker>
+<marker id="s2a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M 0 0 L 10 5 L 0 10 z" fill="#c15f3c"/>
+</marker>
+<marker id="o2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+<path d="M 0 0 L 10 5 L 0 10" fill="none" stroke="#6b6b66" stroke-width="1.4"/>
+</marker>
+<marker id="o2a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+<path d="M 0 0 L 10 5 L 0 10" fill="none" stroke="#c15f3c" stroke-width="1.4"/>
+</marker>
+</defs>
+
+<style>
+.hdr{fill:#f0efe9;stroke:#d4d2c8;stroke-width:1}
+.hn{font-size:11.5px;font-weight:600;fill:#1f1f1d;text-anchor:middle}
+.hs{font-size:9.5px;fill:#6b6b66;text-anchor:middle}
+.ll{stroke:#d4d2c8;stroke-width:1;stroke-dasharray:4 4}
+.act{fill:#f0efe9;stroke:#6b6b66;stroke-width:1}
+.m{stroke:#1f1f1d;stroke-width:1.3;fill:none}
+.ma{stroke:#c15f3c;stroke-width:1.5;fill:none}
+.r{stroke:#6b6b66;stroke-width:1.1;fill:none;stroke-dasharray:5 3}
+.ra{stroke:#c15f3c;stroke-width:1.2;fill:none;stroke-dasharray:5 3}
+.l{font-size:10.5px;fill:#1f1f1d;text-anchor:middle}
+.la{font-size:10.5px;fill:#c15f3c;font-weight:600;text-anchor:middle}
+.frag{fill:none;stroke:#c15f3c;stroke-width:1.1}
+.fragn{fill:none;stroke:#6b6b66;stroke-width:1.1}
+.ft{fill:#f0efe9;stroke:#c15f3c;stroke-width:1.1}
+.ftn{fill:#f0efe9;stroke:#6b6b66;stroke-width:1.1}
+.fl{font-size:10px;font-weight:700;fill:#c15f3c}
+.fln{font-size:10px;font-weight:700;fill:#6b6b66}
+.g{font-size:10px;font-style:italic;fill:#c15f3c}
+.gn{font-size:10px;font-style:italic;fill:#6b6b66}
+.note{fill:#f0efe9;stroke:#d4d2c8;stroke-width:1}
+.nt{font-size:9.5px;fill:#6b6b66}
+.ttl{font-size:14px;font-weight:700;fill:#1f1f1d}
+.sub{font-size:10.5px;fill:#6b6b66}
+.sn{font-size:10px;font-weight:700;fill:#6b6b66}
+</style>
+
+<rect x="0" y="0" width="1320" height="910" fill="#ffffff"/>
+
+<text class="ttl" x="14" y="20">ED-01 STEP 2 (revised) — Identify Available and Appropriate Ambulances</text>
+<text class="sub" x="14" y="35">Accent = changed. Your entity calls were right; the orchestration around them leaks a race and has no failure path.</text>
+
+<circle cx="68" cy="55" r="7" fill="none" stroke="#1f1f1d" stroke-width="1.3"/>
+<path d="M68 62 v16 M58 68 h20 M68 78 l-8 11 M68 78 l8 11" stroke="#1f1f1d" stroke-width="1.3" fill="none"/>
+<text class="hn" x="68" y="103">Emergency</text><text class="hn" x="68" y="115">Dispatcher</text>
+
+<rect class="hdr" x="170" y="46" width="150" height="42" rx="3"/>
+<text class="hn" x="245" y="66">DispatchWorkspace</text><text class="hs" x="245" y="79">«boundary»</text>
+
+<rect class="hdr" x="355" y="46" width="150" height="42" rx="3"/>
+<text class="hn" x="430" y="66">DispatchController</text><text class="hs" x="430" y="79">«control» Spring MVC</text>
+
+<rect class="hdr" x="545" y="46" width="150" height="42" rx="3"/>
+<text class="hn" x="620" y="62">AmbulanceDispatch-</text><text class="hn" x="620" y="74">Facade</text><text class="hs" x="620" y="85">«application facade»</text>
+
+<rect class="hdr" x="745" y="46" width="150" height="42" rx="3"/>
+<text class="hn" x="820" y="62">AmbulanceCallCenter</text><text class="hs" x="820" y="75">«aggregate root»</text><text class="hs" x="820" y="85">coordinates filtering</text>
+
+<rect class="hdr" x="935" y="46" width="150" height="42" rx="3"/>
+<text class="hn" x="1010" y="66">Ambulance</text><text class="hs" x="1010" y="79">«entity» Info Expert</text>
+
+<rect class="hdr" x="1120" y="46" width="150" height="42" rx="3"/>
+<text class="hn" x="1195" y="62">PriorityQueue</text><text class="hs" x="1195" y="74">waitingCalls</text><text class="hs" x="1195" y="85">«internal»</text>
+
+<line class="ll" x1="68" y1="120" x2="68" y2="800"/>
+<line class="ll" x1="245" y1="88" x2="245" y2="800"/>
+<line class="ll" x1="430" y1="88" x2="430" y2="800"/>
+<line class="ll" x1="620" y1="88" x2="620" y2="800"/>
+<line class="ll" x1="820" y1="88" x2="820" y2="800"/>
+<line class="ll" x1="1010" y1="88" x2="1010" y2="800"/>
+<line class="ll" x1="1195" y1="88" x2="1195" y2="800"/>
+
+<rect class="act" x="240" y="125" width="10" height="640"/>
+<rect class="act" x="425" y="158" width="10" height="40"/>
+<rect class="act" x="615" y="191" width="10" height="574"/>
+<rect class="act" x="815" y="224" width="10" height="510"/>
+<rect class="act" x="1005" y="415" width="10" height="22"/>
+<rect class="act" x="1005" y="487" width="10" height="22"/>
+<rect class="act" x="1190" y="255" width="10" height="30"/>
+<rect class="act" x="1190" y="690" width="10" height="16"/>
+
+<text class="sn" x="14" y="132">2. Identify</text>
+<text class="sn" x="14" y="144">available and</text>
+<text class="sn" x="14" y="156">appropriate</text>
+<text class="sn" x="14" y="168">ambulances</text>
+
+<line class="m" x1="68" y1="125" x2="238" y2="125" marker-end="url(#s2)"/>
+<text class="l" x="156" y="119">8. recommendNext()</text>
+
+<line class="ma" x1="250" y1="158" x2="423" y2="158" marker-end="url(#s2a)"/>
+<text class="la" x="337" y="152">9. recommendNext()</text>
+
+<line class="ma" x1="435" y1="191" x2="613" y2="191" marker-end="url(#s2a)"/>
+<text class="la" x="524" y="185">10. recommendNext()</text>
+<text class="g" x="524" y="205" text-anchor="middle">Controller hop was missing from v1</text>
+
+<line class="ma" x1="625" y1="240" x2="813" y2="240" marker-end="url(#s2a)"/>
+<text class="la" x="719" y="234">11. getNextWaitingCall(dispatcherId)</text>
+
+<line class="ma" x1="825" y1="268" x2="1188" y2="268" marker-end="url(#s2a)"/>
+<text class="la" x="1006" y="262">12. peekUnclaimed(dispatcherId)  — peek + visibility lease</text>
+<line class="ra" x1="1188" y1="292" x2="827" y2="292" marker-end="url(#o2a)"/>
+<text class="la" x="1006" y="287">AmbulanceCall  (still queued, now leased)</text>
+
+<rect class="note" x="240" y="248" width="330" height="42" rx="3"/>
+<text class="nt" x="250" y="262" font-weight="700" fill="#1f1f1d">Keeps your peek() invariant</text>
+<text class="nt" x="250" y="274">Call is NOT removed — recommendation is not dispatch.</text>
+<text class="nt" x="250" y="285">Lease only hides it from a second dispatcher's peek.</text>
+
+<line class="m" x1="625" y1="325" x2="813" y2="325" marker-end="url(#s2)"/>
+<text class="l" x="719" y="319">13. getEligibleAmbulances(call)</text>
+
+<path class="ma" d="M825 348 h46 v22 h-44" marker-end="url(#s2a)"/>
+<text class="la" x="882" y="353" text-anchor="start">14. getAvailableAmbulances()  — narrows candidates; no full-fleet scan</text>
+
+<rect class="fragn" x="700" y="386" width="590" height="152" rx="2"/>
+<path class="ftn" d="M700 386 h64 v14 l-10 10 H700 z"/>
+<text class="fln" x="709" y="399">loop</text>
+<text class="gn" x="772" y="399">[ for each available Ambulance ]</text>
+
+<line class="m" x1="825" y1="422" x2="1003" y2="422" marker-end="url(#s2)"/>
+<text class="l" x="914" y="416">15. isDispatchable()</text>
+<line class="ra" x1="1003" y1="440" x2="827" y2="440" marker-end="url(#o2a)"/>
+<text class="la" x="914" y="435">boolean</text>
+
+<rect class="frag" x="722" y="454" width="546" height="74" rx="2"/>
+<path class="ft" d="M722 454 h56 v14 l-10 10 H722 z"/>
+<text class="fl" x="731" y="467">opt</text>
+<text class="g" x="786" y="467">[ isDispatchable == true ]  — short-circuit</text>
+
+<line class="m" x1="825" y1="494" x2="1003" y2="494" marker-end="url(#s2)"/>
+<text class="l" x="914" y="488">16. isAppropriateFor(call)</text>
+<line class="ra" x1="1003" y1="512" x2="827" y2="512" marker-end="url(#o2a)"/>
+<text class="la" x="914" y="507">boolean</text>
+
+<line class="r" x1="813" y1="560" x2="627" y2="560" marker-end="url(#o2)"/>
+<text class="l" x="720" y="554">17. List&lt;Ambulance&gt; eligible</text>
+
+<rect class="frag" x="200" y="582" width="1090" height="212" rx="2"/>
+<path class="ft" d="M200 582 h58 v14 l-10 10 H200 z"/>
+<text class="fl" x="209" y="595">alt</text>
+<text class="g" x="266" y="595">[ eligible is not empty ]</text>
+
+<rect class="ftn" x="560" y="612" width="470" height="30" rx="3"/>
+<path class="ftn" d="M560 612 h40 v11 l-8 8 H560 z"/>
+<text class="fln" x="568" y="622">ref</text>
+<text class="l" x="795" y="633" style="font-size:10px">STEP 3 — recommend(call, eligibleAmbulances)</text>
+
+<line x1="200" y1="658" x2="1290" y2="658" stroke="#c15f3c" stroke-width="1.1" stroke-dasharray="6 4"/>
+<text class="g" x="212" y="672">[ eligible is empty ]  — ALT 2A: no unit available (surge). Missing entirely from v1.</text>
+
+<line class="ma" x1="825" y1="696" x2="1188" y2="696" marker-end="url(#s2a)"/>
+<text class="la" x="1006" y="690">18. releaseLease(call)</text>
+
+<line class="ra" x1="813" y1="726" x2="627" y2="726" marker-end="url(#o2a)"/>
+<text class="la" x="720" y="720">19. NO_ELIGIBLE_AMBULANCE</text>
+
+<line class="ma" x1="613" y1="758" x2="252" y2="758" marker-end="url(#s2a)"/>
+<text class="la" x="432" y="752">20. displayNoAmbulanceAvailable(callId)</text>
+<text class="g" x="432" y="775" text-anchor="middle">call stays in waitingCalls at its original priority</text>
+
+<rect class="note" x="14" y="812" width="1276" height="84" rx="4"/>
+<text class="nt" x="26" y="830" font-weight="700" fill="#1f1f1d">What changed, and why the message count went UP (7 to 13)</text>
+<text class="nt" x="26" y="846">1  peek() keeps your invariant but is unclaimed — two dispatchers calling recommendNext() concurrently both receive the same call. A visibility lease fixes it without removing the call.</text>
+<text class="nt" x="26" y="860">2  The loop iterated the whole fleet. Narrowing to available units is provably result-preserving: your own isDispatchable() contract returns true only for AVAILABLE.</text>
+<text class="nt" x="26" y="874">3  isAppropriateFor(call) was called unconditionally; now short-circuited. 4  Boolean returns for 15/16 were absent — the filter has nothing to filter on without them.</text>
+<text class="nt" x="26" y="888">5  ALT 2A added. The extra messages are returns, guards and the failure path — exactly the things v1 omitted to make its method count look small.</text>
+
+</svg>

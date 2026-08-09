@@ -1,0 +1,190 @@
+<svg viewBox="0 0 1310 940" width="1310" height="940" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Helvetica, Arial, sans-serif" role="img">
+<title>ED-01 Step 6 revised sequence diagram</title>
+<desc>Revised UML sequence diagram for ED-01 Step 6: validation reordered to check the call first, a missing-recommendation path added, the cancelled call removed from the waiting queue, and the retry path referencing steps 2 and 3.</desc>
+
+<defs>
+<marker id="s6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M 0 0 L 10 5 L 0 10 z" fill="#1f1f1d"/>
+</marker>
+<marker id="s6a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M 0 0 L 10 5 L 0 10 z" fill="#c15f3c"/>
+</marker>
+<marker id="o6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+<path d="M 0 0 L 10 5 L 0 10" fill="none" stroke="#6b6b66" stroke-width="1.4"/>
+</marker>
+<marker id="o6a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+<path d="M 0 0 L 10 5 L 0 10" fill="none" stroke="#c15f3c" stroke-width="1.4"/>
+</marker>
+</defs>
+
+<style>
+.hdr{fill:#f0efe9;stroke:#d4d2c8;stroke-width:1}
+.hn{font-size:10.5px;font-weight:600;fill:#1f1f1d;text-anchor:middle}
+.hs{font-size:9px;fill:#6b6b66;text-anchor:middle}
+.ll{stroke:#d4d2c8;stroke-width:1;stroke-dasharray:4 4}
+.act{fill:#f0efe9;stroke:#6b6b66;stroke-width:1}
+.m{stroke:#1f1f1d;stroke-width:1.3;fill:none}
+.ma{stroke:#c15f3c;stroke-width:1.5;fill:none}
+.r{stroke:#6b6b66;stroke-width:1.1;fill:none;stroke-dasharray:5 3}
+.ra{stroke:#c15f3c;stroke-width:1.2;fill:none;stroke-dasharray:5 3}
+.l{font-size:10px;fill:#1f1f1d;text-anchor:middle}
+.la{font-size:10px;fill:#c15f3c;font-weight:600;text-anchor:middle}
+.frag{fill:none;stroke:#c15f3c;stroke-width:1.1}
+.fragn{fill:none;stroke:#6b6b66;stroke-width:1.1}
+.ft{fill:#f0efe9;stroke:#c15f3c;stroke-width:1.1}
+.ftn{fill:#f0efe9;stroke:#6b6b66;stroke-width:1.1}
+.fl{font-size:9.5px;font-weight:700;fill:#c15f3c}
+.fln{font-size:9.5px;font-weight:700;fill:#6b6b66}
+.g{font-size:9.5px;font-style:italic;fill:#c15f3c}
+.gn{font-size:9.5px;font-style:italic;fill:#6b6b66}
+.note{fill:#f0efe9;stroke:#d4d2c8;stroke-width:1}
+.band{fill:#f0efe9;stroke:#c15f3c;stroke-width:1.3}
+.nt{font-size:9.5px;fill:#6b6b66}
+.ttl{font-size:14px;font-weight:700;fill:#1f1f1d}
+.sub{font-size:10.5px;fill:#6b6b66}
+</style>
+
+<rect x="0" y="0" width="1310" height="940" fill="#ffffff"/>
+
+<text class="ttl" x="14" y="20">ED-01 STEP 6 (revised) — Verify Selected Ambulance and Call</text>
+<text class="sub" x="14" y="35">Accent = changed. Your re-check reasoning is right; the order is backwards and two exit paths leak state.</text>
+
+<rect class="hdr" x="38" y="46" width="145" height="42" rx="3"/>
+<text class="hn" x="110" y="64">DispatchWorkspace</text><text class="hs" x="110" y="78">«boundary»</text>
+
+<rect class="hdr" x="218" y="46" width="145" height="42" rx="3"/>
+<text class="hn" x="290" y="62">AmbulanceDispatch-</text><text class="hn" x="290" y="73">Facade</text><text class="hs" x="290" y="84">«app facade»</text>
+
+<rect class="hdr" x="408" y="46" width="145" height="42" rx="3"/>
+<text class="hn" x="480" y="62">AmbulanceCall-</text><text class="hn" x="480" y="73">Center</text><text class="hs" x="480" y="84">«aggregate root»</text>
+
+<rect class="hdr" x="608" y="46" width="145" height="42" rx="3"/>
+<text class="hn" x="680" y="62">DispatchRecom-</text><text class="hn" x="680" y="73">mendation</text><text class="hs" x="680" y="84">«entity»</text>
+
+<rect class="hdr" x="798" y="46" width="145" height="42" rx="3"/>
+<text class="hn" x="870" y="68">AmbulanceCall</text><text class="hs" x="870" y="81">«entity»</text>
+
+<rect class="hdr" x="973" y="46" width="145" height="42" rx="3"/>
+<text class="hn" x="1045" y="68">Ambulance</text><text class="hs" x="1045" y="81">«entity»</text>
+
+<rect class="hdr" x="1143" y="46" width="145" height="42" rx="3"/>
+<text class="hn" x="1215" y="62">PriorityQueue</text><text class="hs" x="1215" y="74">waitingCalls</text><text class="hs" x="1215" y="84">«internal»</text>
+
+<line class="ll" x1="110" y1="88" x2="110" y2="716"/>
+<line class="ll" x1="290" y1="88" x2="290" y2="716"/>
+<line class="ll" x1="480" y1="88" x2="480" y2="716"/>
+<line class="ll" x1="680" y1="88" x2="680" y2="716"/>
+<line class="ll" x1="870" y1="88" x2="870" y2="716"/>
+<line class="ll" x1="1045" y1="88" x2="1045" y2="716"/>
+<line class="ll" x1="1215" y1="88" x2="1215" y2="716"/>
+
+<rect class="act" x="285" y="118" width="10" height="470"/>
+<rect class="act" x="475" y="118" width="10" height="440"/>
+<rect class="act" x="675" y="182" width="10" height="20"/>
+<rect class="act" x="675" y="412" width="10" height="20"/>
+<rect class="act" x="865" y="274" width="10" height="20"/>
+<rect class="act" x="865" y="334" width="10" height="16"/>
+<rect class="act" x="1040" y="450" width="10" height="20"/>
+<rect class="act" x="1040" y="488" width="10" height="20"/>
+<rect class="act" x="1210" y="356" width="10" height="14"/>
+<rect class="act" x="1210" y="660" width="10" height="14"/>
+
+<rect class="band" x="38" y="98" width="1250" height="16" rx="3"/>
+<text class="g" x="663" y="110" text-anchor="middle" font-weight="700">STEP 6 is ADVISORY — it exists to fail early for the dispatcher. Only STEP 7's checks, inside the transaction, are authoritative.</text>
+
+<line class="ma" x1="300" y1="130" x2="473" y2="130" marker-end="url(#s6a)"/>
+<text class="la" x="386" y="124">29. validateDispatchSelection(recommendationId)</text>
+<text class="g" x="500" y="130">ambulanceId parameter dropped — read from the recommendation</text>
+
+<path class="m" d="M485 148 h42 v20 h-40" marker-end="url(#s6)"/>
+<text class="l" x="536" y="153" text-anchor="start">30. getRecommendation(recommendationId)</text>
+
+<line class="m" x1="485" y1="188" x2="673" y2="188" marker-end="url(#s6)"/>
+<text class="l" x="579" y="182">31. getCall()</text>
+<line class="r" x1="673" y1="204" x2="487" y2="204" marker-end="url(#o6)"/>
+<text class="l" x="579" y="199" style="font-size:9.5px">AmbulanceCall</text>
+
+<rect class="frag" x="230" y="216" width="720" height="44" rx="2"/>
+<path class="ft" d="M230 216 h70 v13 l-9 9 H230 z"/>
+<text class="fl" x="238" y="228">break</text>
+<text class="g" x="306" y="228">[ recommendation not found or lease expired ]  — ALT 6C, absent from v1</text>
+<line class="ra" x1="473" y1="252" x2="302" y2="252" marker-end="url(#o6a)"/>
+<text class="la" x="387" y="247">RECOMMENDATION_EXPIRED</text>
+<text class="g" x="500" y="252">→ displayRecommendationExpired(); dispatcher restarts at STEP 2</text>
+
+<line class="ma" x1="485" y1="280" x2="863" y2="280" marker-end="url(#s6a)"/>
+<text class="la" x="674" y="274">32. isReadyForDispatch()   &lt;- checked FIRST now</text>
+<line class="ra" x1="863" y1="296" x2="487" y2="296" marker-end="url(#o6a)"/>
+<text class="la" x="674" y="291">boolean</text>
+
+<rect class="frag" x="230" y="308" width="1058" height="92" rx="2"/>
+<path class="ft" d="M230 308 h70 v13 l-9 9 H230 z"/>
+<text class="fl" x="238" y="320">break</text>
+<text class="g" x="306" y="320">[ isReadyForDispatch == false ]  — ALT 6B: call no longer requires dispatch</text>
+
+<line class="m" x1="485" y1="340" x2="863" y2="340" marker-end="url(#s6)"/>
+<text class="l" x="674" y="334">33. cancelDispatchRequirement()</text>
+
+<line class="ma" x1="485" y1="362" x2="1208" y2="362" marker-end="url(#s6a)"/>
+<text class="la" x="846" y="356">34. remove(call)  +  removeRecommendation(recommendationId)</text>
+
+<line class="ra" x1="473" y1="386" x2="302" y2="386" marker-end="url(#o6a)"/>
+<text class="la" x="387" y="381">CALL_NO_LONGER_REQUIRED</text>
+<text class="g" x="500" y="386">→ displayCallNoLongerRequiresDispatch(); ED-01 ends</text>
+
+<line class="ma" x1="485" y1="418" x2="673" y2="418" marker-end="url(#s6a)"/>
+<text class="la" x="579" y="412">35. getSelectedAmbulance()</text>
+<line class="ra" x1="673" y1="434" x2="487" y2="434" marker-end="url(#o6a)"/>
+<text class="la" x="579" y="429">Ambulance</text>
+
+<line class="m" x1="485" y1="456" x2="1038" y2="456" marker-end="url(#s6)"/>
+<text class="l" x="761" y="450">36. isDispatchable()</text>
+<line class="ra" x1="1038" y1="472" x2="487" y2="472" marker-end="url(#o6a)"/>
+<text class="la" x="761" y="467">boolean</text>
+
+<line class="m" x1="485" y1="494" x2="1038" y2="494" marker-end="url(#s6)"/>
+<text class="l" x="761" y="488">37. isAppropriateFor(call)</text>
+<line class="ra" x1="1038" y1="510" x2="487" y2="510" marker-end="url(#o6a)"/>
+<text class="la" x="761" y="505">boolean</text>
+
+<rect class="frag" x="230" y="524" width="1058" height="184" rx="2"/>
+<path class="ft" d="M230 524 h56 v13 l-9 9 H230 z"/>
+<text class="fl" x="238" y="536">alt</text>
+<text class="g" x="292" y="536">[ both true — selection validated ]</text>
+
+<line class="ra" x1="473" y1="558" x2="302" y2="558" marker-end="url(#o6a)"/>
+<text class="la" x="387" y="553">38. SELECTION_VALID</text>
+<line class="ra" x1="283" y1="580" x2="118" y2="580" marker-end="url(#o6a)"/>
+<text class="la" x="200" y="575">39. enable Confirm</text>
+<text class="gn" x="500" y="580">no state has changed — nothing to roll back if the dispatcher walks away</text>
+
+<line x1="230" y1="596" x2="1288" y2="596" stroke="#c15f3c" stroke-width="1.1" stroke-dasharray="6 4"/>
+<text class="g" x="242" y="609">[ either false ]  — ALT 6A: selected ambulance no longer usable</text>
+
+<path class="ma" d="M485 622 h42 v20 h-40" marker-end="url(#s6a)"/>
+<text class="la" x="536" y="627" text-anchor="start">40. removeRecommendation(recommendationId)  — supersede; the old id must stop resolving</text>
+
+<line class="ma" x1="485" y1="666" x2="1208" y2="666" marker-end="url(#s6a)"/>
+<text class="la" x="846" y="660">41. renewLease(call)  — retry keeps working the same call</text>
+
+<rect class="ftn" x="330" y="678" width="700" height="24" rx="3"/>
+<path class="ftn" d="M330 678 h40 v10 l-8 8 H330 z"/>
+<text class="fln" x="338" y="688">ref</text>
+<text class="l" x="700" y="695" style="font-size:9.5px">STEP 2-3 — rebuild eligibility from current state, re-rank, create new recommendation, return to STEP 4</text>
+
+<rect class="note" x="14" y="726" width="1282" height="200" rx="4"/>
+<text class="nt" x="26" y="744" font-weight="700" fill="#1f1f1d">What changed</text>
+<text class="nt" x="26" y="761">1  Order. isReadyForDispatch() now runs first. Your three checks were ambulance, ambulance, call — but the call check is the one that terminates the use case (ALT 6B), while the</text>
+<text class="nt" x="26" y="773">     ambulance checks only trigger a retry (ALT 6A). Checking the cheap terminal condition last means doing ambulance work for a call that was already cancelled, and showing the dispatcher</text>
+<text class="nt" x="26" y="785">     "ambulance unavailable" when the real answer is "this emergency no longer needs one."</text>
+<text class="nt" x="26" y="802">2  ALT 6B left a poisoned queue entry. v1 cancels the recommendation and tells the dispatcher, then ED-01 ends — but the call was peeked, never removed, so it is still in waitingCalls.</text>
+<text class="nt" x="26" y="814">     The next dispatcher to call getNextWaitingCall() gets the same dead call and walks the entire flow to ALT 6B again. cancelDispatchRequirement() exists in your spec for this; call it, and dequeue.</text>
+<text class="nt" x="26" y="831">3  ALT 6A never retired the old recommendation. Your own comment says "the old recommendation should no longer be treated as authoritative" — but nothing removes it from the</text>
+<text class="nt" x="26" y="843">     recommendations map, so the stale id still resolves and a replayed confirm against it would still succeed. Supersede explicitly.</text>
+<text class="nt" x="26" y="860">4  ALT 6A restated STEP 2-3 inline. That is an interaction-use, not a new flow — and re-listing it means every future change to eligibility or ranking has to be mirrored in two places. As a ref</text>
+<text class="nt" x="26" y="872">     it also inherits ALT 2A, which is what answers "what if the rebuild finds nobody?" — a gap v1's ALT 6A has today. Bound the retry count too, or 6A can ping-pong with STEP 4 indefinitely.</text>
+<text class="nt" x="26" y="889">5  ALT 6C added for a missing or expired recommendation. Your getRecommendation() comment already identifies this case; it just had no drawn path.</text>
+<text class="nt" x="26" y="906">6  displayAmbulanceUnavailable() must come back as a return, not a push from the facade — same layering point as STEP 4.</text>
+<text class="nt" x="26" y="921" font-style="italic">Consequence worth naming: because STEP 6 is advisory, it is the one place in ED-01 you may safely cache, skip, or run optimistically. That is the optimization v2.0 wanted — applied to the right step.</text>
+
+</svg>

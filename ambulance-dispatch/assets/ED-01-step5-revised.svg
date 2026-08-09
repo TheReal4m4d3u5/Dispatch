@@ -1,0 +1,156 @@
+<svg viewBox="0 0 1270 850" width="1270" height="850" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Helvetica, Arial, sans-serif" role="img">
+<title>ED-01 Step 5 revised sequence diagram</title>
+<desc>Revised UML sequence diagram for ED-01 Step 5: two boundary intents converge on a single facade operation carrying a selection source, and the chosen ambulance is stored on the DispatchRecommendation entity.</desc>
+
+<defs>
+<marker id="s5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M 0 0 L 10 5 L 0 10 z" fill="#1f1f1d"/>
+</marker>
+<marker id="s5a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M 0 0 L 10 5 L 0 10 z" fill="#c15f3c"/>
+</marker>
+<marker id="o5a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+<path d="M 0 0 L 10 5 L 0 10" fill="none" stroke="#c15f3c" stroke-width="1.4"/>
+</marker>
+</defs>
+
+<style>
+.hdr{fill:#f0efe9;stroke:#d4d2c8;stroke-width:1}
+.hn{font-size:11px;font-weight:600;fill:#1f1f1d;text-anchor:middle}
+.hs{font-size:9px;fill:#6b6b66;text-anchor:middle}
+.ll{stroke:#d4d2c8;stroke-width:1;stroke-dasharray:4 4}
+.act{fill:#f0efe9;stroke:#6b6b66;stroke-width:1}
+.m{stroke:#1f1f1d;stroke-width:1.3;fill:none}
+.ma{stroke:#c15f3c;stroke-width:1.5;fill:none}
+.ra{stroke:#c15f3c;stroke-width:1.2;fill:none;stroke-dasharray:5 3}
+.l{font-size:10px;fill:#1f1f1d;text-anchor:middle}
+.la{font-size:10px;fill:#c15f3c;font-weight:600;text-anchor:middle}
+.frag{fill:none;stroke:#c15f3c;stroke-width:1.1}
+.ft{fill:#f0efe9;stroke:#c15f3c;stroke-width:1.1}
+.fl{font-size:9.5px;font-weight:700;fill:#c15f3c}
+.g{font-size:9.5px;font-style:italic;fill:#c15f3c}
+.note{fill:#f0efe9;stroke:#d4d2c8;stroke-width:1}
+.warn{fill:none;stroke:#c15f3c;stroke-width:1.4;stroke-dasharray:5 3}
+.nt{font-size:9.5px;fill:#6b6b66}
+.ttl{font-size:14px;font-weight:700;fill:#1f1f1d}
+.sub{font-size:10.5px;fill:#6b6b66}
+</style>
+
+<rect x="0" y="0" width="1270" height="850" fill="#ffffff"/>
+
+<text class="ttl" x="14" y="20">ED-01 STEP 5 (revised) — Accept Recommendation or Choose Another</text>
+<text class="sub" x="14" y="35">Accent = changed. Your boundary methods are right; they converge too late and the selection has nowhere to live.</text>
+
+<circle cx="80" cy="55" r="7" fill="none" stroke="#1f1f1d" stroke-width="1.3"/>
+<path d="M80 62 v16 M70 68 h20 M80 78 l-8 11 M80 78 l8 11" stroke="#1f1f1d" stroke-width="1.3" fill="none"/>
+<text class="hn" x="80" y="99">Emergency</text><text class="hn" x="80" y="110">Dispatcher</text>
+
+<rect class="hdr" x="192" y="42" width="165" height="44" rx="3"/>
+<text class="hn" x="275" y="62">DispatchWorkspace</text><text class="hs" x="275" y="76">«boundary»</text>
+
+<rect class="hdr" x="397" y="42" width="165" height="44" rx="3"/>
+<text class="hn" x="480" y="62">DispatchController</text><text class="hs" x="480" y="76">«control» Spring MVC</text>
+
+<rect class="hdr" x="607" y="42" width="165" height="44" rx="3"/>
+<text class="hn" x="690" y="58">AmbulanceDispatchFacade</text><text class="hs" x="690" y="76">«application facade»</text>
+
+<rect class="hdr" x="817" y="42" width="165" height="44" rx="3"/>
+<text class="hn" x="900" y="62">AmbulanceCallCenter</text><text class="hs" x="900" y="76">«aggregate root»</text>
+
+<rect class="hdr" x="1037" y="42" width="165" height="44" rx="3"/>
+<text class="hn" x="1120" y="58">DispatchRecommendation</text><text class="hs" x="1120" y="76">«entity»</text>
+
+<line class="ll" x1="80" y1="116" x2="80" y2="640"/>
+<line class="ll" x1="275" y1="86" x2="275" y2="640"/>
+<line class="ll" x1="480" y1="86" x2="480" y2="640"/>
+<line class="ll" x1="690" y1="86" x2="690" y2="640"/>
+<line class="ll" x1="900" y1="86" x2="900" y2="640"/>
+<line class="ll" x1="1120" y1="86" x2="1120" y2="640"/>
+
+<rect class="act" x="270" y="150" width="10" height="440"/>
+<rect class="act" x="475" y="182" width="10" height="180"/>
+<rect class="act" x="685" y="212" width="10" height="330"/>
+<rect class="act" x="895" y="382" width="10" height="80"/>
+<rect class="act" x="1115" y="490" width="10" height="26"/>
+
+<rect class="frag" x="150" y="118" width="880" height="232" rx="2"/>
+<path class="ft" d="M150 118 h56 v13 l-9 9 H150 z"/>
+<text class="fl" x="158" y="130">alt</text>
+<text class="g" x="212" y="130">[ dispatcher accepts the CAD recommendation ]</text>
+
+<line class="m" x1="88" y1="152" x2="268" y2="152" marker-end="url(#s5)"/>
+<text class="l" x="178" y="146">20. selectRecommendedAmbulance(</text>
+<text class="l" x="178" y="166">recommendationId)</text>
+
+<line class="m" x1="285" y1="188" x2="473" y2="188" marker-end="url(#s5)"/>
+<text class="l" x="379" y="182">21. selectRecommendedAmbulance(</text>
+<text class="l" x="379" y="202">recommendationId)</text>
+
+<line class="ma" x1="490" y1="222" x2="683" y2="222" marker-end="url(#s5a)"/>
+<text class="la" x="586" y="216">22. selectAmbulance(recommendationId,</text>
+<text class="la" x="586" y="236">recommendedAmbulanceId, CAD_RECOMMENDED)</text>
+
+<line x1="150" y1="252" x2="1030" y2="252" stroke="#c15f3c" stroke-width="1.1" stroke-dasharray="6 4"/>
+<text class="g" x="162" y="265">[ ALT 5A — dispatcher overrides, picking from the ranked alternatives shown in STEP 4 ]</text>
+
+<line class="m" x1="88" y1="288" x2="268" y2="288" marker-end="url(#s5)"/>
+<text class="l" x="178" y="282">20. selectAlternateAmbulance(</text>
+<text class="la" x="178" y="302">recommendationId, ambulanceId, reasonCode)</text>
+
+<line class="m" x1="285" y1="322" x2="473" y2="322" marker-end="url(#s5)"/>
+<text class="l" x="379" y="316">21. selectAlternateAmbulance(</text>
+<text class="la" x="379" y="336">recommendationId, ambulanceId, reasonCode)</text>
+
+<line class="ma" x1="490" y1="360" x2="683" y2="360" marker-end="url(#s5a)"/>
+<text class="la" x="586" y="354">22. selectAmbulance(recommendationId, ambulanceId,</text>
+<text class="la" x="586" y="374">DISPATCHER_OVERRIDE, reasonCode)</text>
+
+<line class="ma" x1="700" y1="392" x2="893" y2="392" marker-end="url(#s5a)"/>
+<text class="la" x="796" y="386">23. getRecommendation(recommendationId)</text>
+
+<line class="ma" x1="700" y1="432" x2="893" y2="432" marker-end="url(#s5a)"/>
+<text class="la" x="796" y="426">24. getAmbulance(ambulanceId)</text>
+<line class="ra" x1="893" y1="452" x2="702" y2="452" marker-end="url(#o5a)"/>
+<text class="la" x="796" y="447">Ambulance</text>
+
+<line class="ma" x1="700" y1="496" x2="1113" y2="496" marker-end="url(#s5a)"/>
+<text class="la" x="906" y="490">25. select(ambulance, source, reasonCode)  — stored on the recommendation</text>
+
+<line class="ra" x1="683" y1="534" x2="492" y2="534" marker-end="url(#o5a)"/>
+<text class="la" x="587" y="528">26. SelectionAccepted</text>
+
+<line class="ra" x1="473" y1="562" x2="287" y2="562" marker-end="url(#o5a)"/>
+<text class="la" x="380" y="556">27. SelectionAccepted</text>
+
+<path class="ma" d="M280 578 h44 v22 h-42" marker-end="url(#s5a)"/>
+<text class="la" x="334" y="583" text-anchor="start">28. displaySelection(view) — enables Confirm; no state has changed yet</text>
+
+<rect class="warn" x="1042" y="150" width="212" height="86" rx="4"/>
+<text class="g" x="1052" y="166" font-weight="700">NEW field required</text>
+<text class="g" x="1052" y="179">DispatchRecommendation has</text>
+<text class="g" x="1052" y="190">recommendationId, call,</text>
+<text class="g" x="1052" y="201">recommendedAmbulance,</text>
+<text class="g" x="1052" y="212">travelEstimate — but no</text>
+<text class="g" x="1052" y="223">selectedAmbulance. In v1 the</text>
+<text class="g" x="1052" y="234">selection had nowhere to go.</text>
+
+<rect class="warn" x="1042" y="392" width="212" height="60" rx="4"/>
+<text class="g" x="1052" y="408" font-weight="700">ALT 5A-i: unknown id</text>
+<text class="g" x="1052" y="421">If ambulanceId does not resolve,</text>
+<text class="g" x="1052" y="432">or was not in the eligible set,</text>
+<text class="g" x="1052" y="443">reject here — do not defer to STEP 6.</text>
+
+<rect class="note" x="14" y="656" width="1242" height="180" rx="4"/>
+<text class="nt" x="26" y="674" font-weight="700" fill="#1f1f1d">What changed</text>
+<text class="nt" x="26" y="691">1  Converge at the facade, not at STEP 6. Two boundary methods are right — "accept" and "override" are genuinely different dispatcher intents, and you need the distinction for audit</text>
+<text class="nt" x="26" y="703">     (CAD acceptance rate is a core CAD metric). But keeping them separate through all three layers duplicates a code path to record a fact. Carry it as data — a SelectionSource — not as control flow.</text>
+<text class="nt" x="26" y="720">2  The selection is now persisted. This is the structural problem in v1: AmbulanceDispatchFacade.selectRecommendedAmbulance() is documented as "records the dispatcher's selection",</text>
+<text class="nt" x="26" y="732">     but DispatchRecommendation has no field to record it in — so STEP 5 was a no-op and the ambulanceId simply rode along as a parameter into messages 26, 31 and 32.</text>
+<text class="nt" x="26" y="749">3  That parameter-passing is a correctness hole. validateDispatchSelection(recommendationId, selectedAmbulanceId) and confirmDispatch(recommendationId, selectedAmbulanceId) each take</text>
+<text class="nt" x="26" y="761">     the id independently, so nothing guarantees STEP 7 confirms the same ambulance STEP 6 validated. Storing the selection and having later steps read it closes that gap entirely.</text>
+<text class="nt" x="26" y="778">4  ALT 5A now has a source for its alternatives. Your comment says the dispatcher "chooses another appropriate ambulance" — but v1's STEP 3 returned one ambulance and discarded the</text>
+<text class="nt" x="26" y="790">     ranking, and STEP 4 displayed only that one. The dispatcher had no on-screen list, so the override meant typing a unit id from memory. STEP 3's ranked list is what fills this menu.</text>
+<text class="nt" x="26" y="807">5  reasonCode added. An override is a clinical decision that gets reviewed after the fact; real CAD requires justification when a dispatcher rejects the recommended unit.</text>
+<text class="nt" x="26" y="824">6  Still unresolved: recommendationId is long in the class spec and String in the v2.0 optimized doc. Pick one before writing any of these signatures.</text>
+
+</svg>

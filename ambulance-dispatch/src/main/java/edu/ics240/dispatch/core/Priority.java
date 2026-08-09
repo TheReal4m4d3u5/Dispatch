@@ -1,17 +1,14 @@
 package edu.ics240.dispatch.core;
 
 /**
- * Emergency-call priority.
- *
- * Lower rank values represent greater urgency.
+ * Domain Priority with explicit numeric rank.
+ * Use getRank() instead of ordinal() to avoid brittle ordering.
  */
 public enum Priority {
-
-    CRITICAL(1),
-    HIGH(2),
-    MEDIUM(3),
-    LOW(4),
-    NON_EMERGENCY(5);
+    LOW(1),
+    MEDIUM(2),
+    HIGH(3),
+    CRITICAL(4);
 
     private final int rank;
 
@@ -19,19 +16,10 @@ public enum Priority {
         this.rank = rank;
     }
 
+    /**
+     * Numeric rank used for ordering. Higher number = higher urgency.
+     */
     public int getRank() {
         return rank;
-    }
-
-    public static Priority fromRank(int rank) {
-        for (Priority priority : values()) {
-            if (priority.rank == rank) {
-                return priority;
-            }
-        }
-
-        throw new IllegalArgumentException(
-                "Priority rank must be between 1 and 5: " + rank
-        );
     }
 }

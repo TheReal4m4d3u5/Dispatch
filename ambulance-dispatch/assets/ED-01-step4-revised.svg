@@ -1,0 +1,130 @@
+<svg viewBox="0 0 1240 660" width="1240" height="660" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Helvetica, Arial, sans-serif" role="img">
+<title>ED-01 Step 4 revised sequence diagram</title>
+<desc>Revised UML sequence diagram for ED-01 Step 4: the recommendation is assembled into an immutable view model and returned up the layer chain rather than pushed from the application facade to the boundary.</desc>
+
+<defs>
+<marker id="s4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M 0 0 L 10 5 L 0 10 z" fill="#1f1f1d"/>
+</marker>
+<marker id="s4a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M 0 0 L 10 5 L 0 10 z" fill="#c15f3c"/>
+</marker>
+<marker id="o4a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+<path d="M 0 0 L 10 5 L 0 10" fill="none" stroke="#c15f3c" stroke-width="1.4"/>
+</marker>
+<marker id="o4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+<path d="M 0 0 L 10 5 L 0 10" fill="none" stroke="#6b6b66" stroke-width="1.4"/>
+</marker>
+</defs>
+
+<style>
+.hdr{fill:#f0efe9;stroke:#d4d2c8;stroke-width:1}
+.hn{font-size:11.5px;font-weight:600;fill:#1f1f1d;text-anchor:middle}
+.hs{font-size:9.5px;fill:#6b6b66;text-anchor:middle}
+.ll{stroke:#d4d2c8;stroke-width:1;stroke-dasharray:4 4}
+.act{fill:#f0efe9;stroke:#6b6b66;stroke-width:1}
+.m{stroke:#1f1f1d;stroke-width:1.3;fill:none}
+.ma{stroke:#c15f3c;stroke-width:1.5;fill:none}
+.r{stroke:#6b6b66;stroke-width:1.1;fill:none;stroke-dasharray:5 3}
+.ra{stroke:#c15f3c;stroke-width:1.2;fill:none;stroke-dasharray:5 3}
+.l{font-size:10.5px;fill:#1f1f1d;text-anchor:middle}
+.la{font-size:10.5px;fill:#c15f3c;font-weight:600;text-anchor:middle}
+.g{font-size:9.5px;font-style:italic;fill:#c15f3c}
+.note{fill:#f0efe9;stroke:#d4d2c8;stroke-width:1}
+.warn{fill:none;stroke:#c15f3c;stroke-width:1.4;stroke-dasharray:5 3}
+.nt{font-size:9.5px;fill:#6b6b66}
+.ttl{font-size:14px;font-weight:700;fill:#1f1f1d}
+.sub{font-size:10.5px;fill:#6b6b66}
+.tx{stroke:#6b6b66;stroke-width:1.1;stroke-dasharray:7 4}
+.txl{font-size:10px;font-weight:600;fill:#6b6b66;text-anchor:middle}
+</style>
+
+<rect x="0" y="0" width="1240" height="660" fill="#ffffff"/>
+
+<text class="ttl" x="14" y="20">ED-01 STEP 4 (revised) — Dispatcher Reviews Recommended Ambulance</text>
+<text class="sub" x="14" y="35">Accent = changed. The v1 message ran the wrong way down the dependency chain.</text>
+
+<circle cx="90" cy="55" r="7" fill="none" stroke="#1f1f1d" stroke-width="1.3"/>
+<path d="M90 62 v16 M80 68 h20 M90 78 l-8 11 M90 78 l8 11" stroke="#1f1f1d" stroke-width="1.3" fill="none"/>
+<text class="hn" x="90" y="103">Emergency</text><text class="hn" x="90" y="115">Dispatcher</text>
+
+<rect class="hdr" x="235" y="42" width="170" height="46" rx="3"/>
+<text class="hn" x="320" y="64">DispatchWorkspace</text><text class="hs" x="320" y="78">«boundary»</text>
+
+<rect class="hdr" x="475" y="42" width="170" height="46" rx="3"/>
+<text class="hn" x="560" y="64">DispatchController</text><text class="hs" x="560" y="78">«control» Spring MVC</text>
+
+<rect class="hdr" x="725" y="42" width="170" height="46" rx="3"/>
+<text class="hn" x="810" y="58">AmbulanceDispatch-</text><text class="hn" x="810" y="70">Facade</text><text class="hs" x="810" y="82">«application facade»</text>
+
+<rect class="hdr" x="1005" y="42" width="170" height="46" rx="3"/>
+<text class="hn" x="1090" y="58">DispatchRecom-</text><text class="hn" x="1090" y="70">mendation</text><text class="hs" x="1090" y="82">«entity»</text>
+
+<line class="ll" x1="90" y1="120" x2="90" y2="470"/>
+<line class="ll" x1="320" y1="88" x2="320" y2="470"/>
+<line class="ll" x1="560" y1="88" x2="560" y2="470"/>
+<line class="ll" x1="810" y1="88" x2="810" y2="470"/>
+<line class="ll" x1="1090" y1="88" x2="1090" y2="470"/>
+
+<rect class="act" x="315" y="348" width="10" height="90"/>
+<rect class="act" x="555" y="316" width="10" height="36"/>
+<rect class="act" x="805" y="120" width="10" height="200"/>
+<rect class="act" x="1085" y="128" width="10" height="122"/>
+
+<line class="ma" x1="815" y1="128" x2="1083" y2="128" marker-end="url(#s4a)"/>
+<text class="la" x="949" y="122">19. getRecommendedAmbulance()</text>
+<line class="ra" x1="1083" y1="148" x2="817" y2="148" marker-end="url(#o4a)"/>
+<text class="la" x="949" y="143">Ambulance</text>
+
+<line class="ma" x1="815" y1="176" x2="1083" y2="176" marker-end="url(#s4a)"/>
+<text class="la" x="949" y="170">20. getTravelEstimate()</text>
+<line class="ra" x1="1083" y1="196" x2="817" y2="196" marker-end="url(#o4a)"/>
+<text class="la" x="949" y="191">TravelEstimate</text>
+
+<line class="ma" x1="815" y1="224" x2="1083" y2="224" marker-end="url(#s4a)"/>
+<text class="la" x="949" y="218">21. getRankedAlternatives()</text>
+<line class="ra" x1="1083" y1="244" x2="817" y2="244" marker-end="url(#o4a)"/>
+<text class="la" x="949" y="239">List&lt;RankedCandidate&gt;</text>
+
+<path class="ma" d="M815 268 h46 v22 h-44" marker-end="url(#s4a)"/>
+<text class="la" x="872" y="273" text-anchor="start">22. assembleView()  to RecommendationView (immutable DTO)</text>
+
+<line class="ra" x1="803" y1="322" x2="567" y2="322" marker-end="url(#o4a)"/>
+<text class="la" x="685" y="316">23. RecommendationView</text>
+
+<line class="ra" x1="553" y1="354" x2="327" y2="354" marker-end="url(#o4a)"/>
+<text class="la" x="440" y="348">24. RecommendationView</text>
+
+<path class="ma" d="M325 380 h46 v22 h-44" marker-end="url(#s4a)"/>
+<text class="la" x="382" y="385" text-anchor="start">25. displayRecommendation(view)</text>
+
+<line class="ma" x1="313" y1="428" x2="98" y2="428" marker-end="url(#s4a)"/>
+<text class="la" x="205" y="422">26. present recommendation</text>
+
+<line class="tx" x1="60" y1="458" x2="1180" y2="458"/>
+<text class="txl" x="620" y="452">dispatcher think time — no system activity, but the STEP 2 lease clock is running</text>
+
+<rect class="warn" x="480" y="128" width="290" height="56" rx="4"/>
+<text class="g" x="492" y="144" font-weight="700">REMOVED: Facade to Workspace direct push</text>
+<text class="g" x="492" y="157">AmbulanceDispatchFacade holds callCenter,</text>
+<text class="g" x="492" y="168">recommendationService, travelEstimateProvider.</text>
+<text class="g" x="492" y="179">It has no boundary reference — it cannot call this.</text>
+
+<rect class="warn" x="120" y="228" width="300" height="44" rx="4"/>
+<text class="g" x="132" y="244" font-weight="700">Lease expiry during review</text>
+<text class="g" x="132" y="257">If the dispatcher walks away, the lease lapses,</text>
+<text class="g" x="132" y="268">the call returns to waitingCalls, view goes stale.</text>
+
+<rect class="note" x="14" y="486" width="1212" height="160" rx="4"/>
+<text class="nt" x="26" y="504" font-weight="700" fill="#1f1f1d">What changed</text>
+<text class="nt" x="26" y="521">1  Direction. v1 drew displayRecommendation() as a call from AmbulanceDispatchFacade straight to DispatchWorkspace, crossing DispatchController without stopping. That inverts the</text>
+<text class="nt" x="26" y="533">     dependency the facade exists to enforce: DispatchWorkspace holds a DispatchController; nothing holds a reference back down to the boundary. The reply must travel up as returns.</text>
+<text class="nt" x="26" y="550">2  Parameter. Passing the DispatchRecommendation entity hands the UI live, mutable domain objects — the boundary could reach recommendation.getRecommendedAmbulance().assignTo(...).</text>
+<text class="nt" x="26" y="562">     An immutable RecommendationView carries only what the dispatcher needs to judge the choice.</text>
+<text class="nt" x="26" y="579">3  Content. This is a review step with nothing to review. Until STEP 3 populates travelEstimate, the dispatcher sees an ambulance ID and no ETA, no distance, no rationale, no alternatives —</text>
+<text class="nt" x="26" y="591">     so "reviews the recommended ambulance" is not an action they can actually perform. The view must carry ETA, distance, availableSince, call priority, and the ranked alternatives.</text>
+<text class="nt" x="26" y="608">4  Redundancy. v1 called getRecommendationId() at message 18 and then passed the whole recommendation object at 24. One of those two is dead code.</text>
+<text class="nt" x="26" y="625">5  Actor. The step is named "Dispatcher reviews" but no message reached the actor's lifeline. The review is the step; it should be visible.</text>
+<text class="nt" x="26" y="640" font-style="italic">Note: still do NOT merge STEP 4 into STEP 5 — these are opposite-direction messages separated by human latency, so there is no round-trip to save.</text>
+
+</svg>

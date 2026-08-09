@@ -1,151 +1,159 @@
 package edu.ics240.dispatch.service;
 
 import edu.ics240.dispatch.core.*;
+import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.time.Instant;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
+@Service
 public class AmbulanceCallCenter {
+	private final Map<Long, AmbulanceCall> calls = new ConcurrentHashMap<>();
+    private final WaitingCalls waitingCalls;
+    private final AmbulanceCallRepository callRepo;
+    private final AmbulanceRepository ambulanceRepo;
+    private final DispatchRecommendationRepository recommendationRepo;
+    private final DispatchRecordRepository dispatchRecordRepo;
 
-    private final PriorityQueue<AmbulanceCall>
-            waitingCalls =
-            new PriorityQueue<>(
-                    new EmergencyCallComparator()
-            );
-
-    private final Map<Integer, Ambulance>
-            ambulances =
-            new HashMap<>();
-
-    private final Map<Long, DispatchRecommendation>
-            recommendations =
-            new HashMap<>();
-
-    private final Map<Long, DispatchRecord>
-            activeDispatches =
-            new HashMap<>();
-
-    private long nextRecommendationId = 1;
-    private long nextDispatchId = 1;
-
-    public void addCall(AmbulanceCall call) {
-        waitingCalls.add(call);
+    public AmbulanceCallCenter(WaitingCalls waitingCalls,
+                               AmbulanceCallRepository callRepo,
+                               AmbulanceRepository ambulanceRepo,
+                               DispatchRecommendationRepository recommendationRepo,
+                               DispatchRecordRepository dispatchRecordRepo) {
+        this.waitingCalls = waitingCalls;
+        this.callRepo = callRepo;
+        this.ambulanceRepo = ambulanceRepo;
+        this.recommendationRepo = recommendationRepo;
+        this.dispatchRecordRepo = dispatchRecordRepo;
     }
 
-    public void addAmbulance(Ambulance ambulance) {
-        ambulances.put(
-        		ambulance.getAmbulanceId(),
-                ambulance
-        );
-    }
+    // ---------------------------------------------------------------- registry
 
-    public AmbulanceCall getNextWaitingCall() {
-        return waitingCalls.peek();
-    }
-
-    public List<Ambulance> getAvailableAmbulances() {
-
-        List<Ambulance> available =
-                new ArrayList<>();
-
-        for (Ambulance ambulance : ambulances.values()) {
-
-            if (ambulance.isAvailable()) {
-                available.add(ambulance);
-            }
+    /** Test support: wipe in-memory state between BDD scenarios. */
+    public void reset() {
+        for (AmbulanceCall call : waitingCalls.snapshot()) {
+            waitingCalls.remove(call);
         }
-
-        return available;
+        calls.clear();
+        dispatchRecordRepo.deleteAll();
+        ambulanceRepo.deleteAll();
+    }
+    
+    
+    public void registerAmbulance(Ambulance unit) {
+        ambulanceRepo.save(unit);
     }
 
-    public DispatchRecommendation
-            createRecommendation(
-                    AmbulanceCall call,
-                    Ambulance ambulance) {
-
-        DispatchRecommendation recommendation =
-                new DispatchRecommendation(
-                        nextRecommendationId++,
-                        call,
-                        ambulance
-                );
-
-        recommendations.put(
-                recommendation.getRecommendationId(),
-                recommendation
-        );
-
-        return recommendation;
+    public void registerCall(AmbulanceCall call) {
+        callRepo.save(call);
     }
 
-    public DispatchRecommendation
-            getRecommendation(
-                    long recommendationId) {
-
-        return recommendations.get(
-                recommendationId
-        );
+    public AmbulanceCall getCall(long callId) {
+        return calls.get(callId);        // ← is this what it actually says?
     }
 
-    public DispatchRecord confirmDispatch(
-            long recommendationId) {
+    public Ambulance getAmbulance(long ambulanceId) {
+        return ambulanceRepo.findById(ambulanceId).orElse(null);
+    }
 
-        DispatchRecommendation recommendation =
-                recommendations.get(
-                        recommendationId
-                );
+    public List<AmbulanceCall> waitingCallsSnapshot() {
+        return waitingCalls.snapshot();       // adjust to your WaitingCalls method name
+    }
 
-        if (recommendation == null) {
-            throw new IllegalArgumentException(
-                    "Recommendation does not exist."
-            );
+    public List<DispatchRecord> getActiveDispatches() {
+        return dispatchRecordRepo.findAll();
+    }
+    // ---------------------------------------------------------------- unchanged
+
+    public void completeEvaluation(AmbulanceCall call, Priority priority,
+                                   String requiredCapability, String jurisdiction,
+                                   boolean requiresDispatch) {
+        call.completeEvaluation(priority, requiredCapability, jurisdiction, requiresDispatch);
+        if (requiresDispatch) {
+            call.markReadyForDispatch();
+            waitingCalls.add(call);
+        } else {
+            call.cancelDispatchRequirement();
+            waitingCalls.remove(call);
         }
+        callRepo.save(call);
+    }
 
-        Ambulance ambulance =
-                recommendation
-                        .getRecommendedAmbulance();
+    public Optional<AmbulanceCall> getNextWaitingCall(long dispatcherId) {
+        return waitingCalls.peekUnclaimed(dispatcherId);
+    }
 
-        AmbulanceCall call =
-                recommendation.getCall();
+    public List<Ambulance> getEligibleAmbulances(AmbulanceCall call) {
+        return ambulanceRepo.findAvailableInJurisdiction(call.getJurisdiction()).stream()
+                .filter(Ambulance::isDispatchable)
+                .filter(a -> a.isAppropriateFor(call))
+                .toList();
+    }
 
-        /*
-         * STEP 6:
-         * Revalidate immediately before dispatch.
-         */
-        if (!ambulance.isAvailable()) {
-            throw new IllegalStateException(
-                    "Selected ambulance is no longer available."
-            );
-        }
+    public void renewLease(AmbulanceCall call) {
+        waitingCalls.renewLease(call);
+    }
 
-        if (!waitingCalls.contains(call)) {
-            throw new IllegalStateException(
-                    "Emergency call no longer requires dispatch."
-            );
-        }
+    public void removeFromQueue(AmbulanceCall call) {
+        waitingCalls.remove(call);
+    }
 
-        /*
-         * Now commit.
-         */
-        ambulance.assignTo(call);
+    public DispatchRecord confirmDispatch(DispatchRecommendation rec) {
+        AmbulanceCall call = rec.getCall();
+        Ambulance selected = rec.getSelectedAmbulance();
+        Instant dispatchedAt = Instant.now();
+
+        call.assignTo(selected, dispatchedAt);
+        selected.markDispatched();
+
+        DispatchRecord record = new DispatchRecord(
+                dispatchRecordRepo.nextId(), call, selected, dispatchedAt);
 
         waitingCalls.remove(call);
-
-        DispatchRecord dispatch =
-                new DispatchRecord(
-                        nextDispatchId++,
-                        call,
-                        ambulance
-                );
-
-        activeDispatches.put(
-                dispatch.getDispatchId(),
-                dispatch
-        );
-
-        recommendations.remove(
-                recommendationId
-        );
-
-        return dispatch;
+        recommendationRepo.delete(rec);
+        dispatchRecordRepo.save(record);
+        ambulanceRepo.save(selected);
+        callRepo.save(call);
+        return record;
     }
+
+    public boolean recordAcknowledgement(long dispatchId, Instant at) {
+        Optional<DispatchRecord> found = dispatchRecordRepo.findById(dispatchId);
+        if (found.isEmpty()) {
+            return false;
+        }
+        DispatchRecord record = found.get();
+        record.markAcknowledged(at);
+        dispatchRecordRepo.save(record);
+        return true;
+    }
+
+    public boolean beginResponse(long dispatchId) {
+        Optional<DispatchRecord> found = dispatchRecordRepo.findById(dispatchId);
+        if (found.isEmpty()) {
+            return false;
+        }
+        DispatchRecord record = found.get();
+        record.markInProgress();
+        dispatchRecordRepo.save(record);
+
+        Ambulance unit = record.getAmbulance();
+        if (unit != null) {
+            unit.markEnRoute();
+            ambulanceRepo.save(unit);
+        }
+        return true;
+    }
+
+	public void acknowledgeDispatch(long dispatchId, Instant now) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void recordCall(AmbulanceCall call) {
+	    calls.put(call.getId(), call);
+	}
 }

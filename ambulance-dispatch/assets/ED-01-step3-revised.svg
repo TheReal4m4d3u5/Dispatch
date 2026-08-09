@@ -1,0 +1,172 @@
+<svg viewBox="0 0 1320 840" width="1320" height="840" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Helvetica, Arial, sans-serif" role="img">
+<title>ED-01 Step 3 revised sequence diagram</title>
+<desc>Revised UML sequence diagram for ED-01 Step 3: hoisted call location, two-stage ranking with travel estimates, explicit ranking comparator, and a ranked candidate list returned instead of a single winner.</desc>
+
+<defs>
+<marker id="s3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M 0 0 L 10 5 L 0 10 z" fill="#1f1f1d"/>
+</marker>
+<marker id="s3a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M 0 0 L 10 5 L 0 10 z" fill="#c15f3c"/>
+</marker>
+<marker id="o3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+<path d="M 0 0 L 10 5 L 0 10" fill="none" stroke="#6b6b66" stroke-width="1.4"/>
+</marker>
+<marker id="o3a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+<path d="M 0 0 L 10 5 L 0 10" fill="none" stroke="#c15f3c" stroke-width="1.4"/>
+</marker>
+</defs>
+
+<style>
+.hdr{fill:#f0efe9;stroke:#d4d2c8;stroke-width:1}
+.hn{font-size:10.5px;font-weight:600;fill:#1f1f1d;text-anchor:middle}
+.hs{font-size:9px;fill:#6b6b66;text-anchor:middle}
+.ll{stroke:#d4d2c8;stroke-width:1;stroke-dasharray:4 4}
+.act{fill:#f0efe9;stroke:#6b6b66;stroke-width:1}
+.m{stroke:#1f1f1d;stroke-width:1.3;fill:none}
+.ma{stroke:#c15f3c;stroke-width:1.5;fill:none}
+.r{stroke:#6b6b66;stroke-width:1.1;fill:none;stroke-dasharray:5 3}
+.ra{stroke:#c15f3c;stroke-width:1.2;fill:none;stroke-dasharray:5 3}
+.l{font-size:10px;fill:#1f1f1d;text-anchor:middle}
+.la{font-size:10px;fill:#c15f3c;font-weight:600;text-anchor:middle}
+.frag{fill:none;stroke:#c15f3c;stroke-width:1.1}
+.fragn{fill:none;stroke:#6b6b66;stroke-width:1.1}
+.ft{fill:#f0efe9;stroke:#c15f3c;stroke-width:1.1}
+.ftn{fill:#f0efe9;stroke:#6b6b66;stroke-width:1.1}
+.fl{font-size:9.5px;font-weight:700;fill:#c15f3c}
+.fln{font-size:9.5px;font-weight:700;fill:#6b6b66}
+.g{font-size:9.5px;font-style:italic;fill:#c15f3c}
+.gn{font-size:9.5px;font-style:italic;fill:#6b6b66}
+.note{fill:#f0efe9;stroke:#d4d2c8;stroke-width:1}
+.warn{fill:none;stroke:#c15f3c;stroke-width:1.4;stroke-dasharray:5 3}
+.nt{font-size:9px;fill:#6b6b66}
+.ttl{font-size:14px;font-weight:700;fill:#1f1f1d}
+.sub{font-size:10.5px;fill:#6b6b66}
+</style>
+
+<rect x="0" y="0" width="1320" height="840" fill="#ffffff"/>
+
+<text class="ttl" x="14" y="20">ED-01 STEP 3 (revised) — Determine Best Choice</text>
+<text class="sub" x="14" y="35">Accent = changed. Pure ranking: no entity state is mutated anywhere in this step.</text>
+
+<rect class="hdr" x="35" y="42" width="140" height="46" rx="3"/>
+<text class="hn" x="105" y="58">AmbulanceDispatch-</text><text class="hn" x="105" y="70">Facade</text><text class="hs" x="105" y="82">«app facade»</text>
+
+<rect class="hdr" x="195" y="42" width="140" height="46" rx="3"/>
+<text class="hn" x="265" y="58">AmbulanceCall-</text><text class="hn" x="265" y="70">Center</text><text class="hs" x="265" y="82">«aggregate root»</text>
+
+<rect class="hdr" x="360" y="42" width="140" height="46" rx="3"/>
+<text class="hn" x="430" y="58">CadRecommend-</text><text class="hn" x="430" y="70">ationService</text><text class="hs" x="430" y="82">«ranking service»</text>
+
+<rect class="hdr" x="520" y="42" width="140" height="46" rx="3"/>
+<text class="hn" x="590" y="64">AmbulanceCall</text><text class="hs" x="590" y="78">«entity»</text>
+
+<rect class="hdr" x="675" y="42" width="140" height="46" rx="3"/>
+<text class="hn" x="745" y="64">Ambulance</text><text class="hs" x="745" y="78">«entity»</text>
+
+<rect class="hdr" x="830" y="42" width="140" height="46" rx="3"/>
+<text class="hn" x="900" y="64">Location</text><text class="hs" x="900" y="78">«value object»</text>
+
+<rect class="hdr" x="988" y="42" width="140" height="46" rx="3"/>
+<text class="hn" x="1058" y="58">TravelEstimate-</text><text class="hn" x="1058" y="70">Provider</text><text class="hs" x="1058" y="82">«service» NEW HERE</text>
+
+<rect class="hdr" x="1145" y="42" width="140" height="46" rx="3"/>
+<text class="hn" x="1215" y="58">DispatchRecom-</text><text class="hn" x="1215" y="70">mendation</text><text class="hs" x="1215" y="82">«entity»</text>
+
+<line class="ll" x1="105" y1="88" x2="105" y2="700"/>
+<line class="ll" x1="265" y1="88" x2="265" y2="700"/>
+<line class="ll" x1="430" y1="88" x2="430" y2="700"/>
+<line class="ll" x1="590" y1="88" x2="590" y2="700"/>
+<line class="ll" x1="745" y1="88" x2="745" y2="700"/>
+<line class="ll" x1="900" y1="88" x2="900" y2="700"/>
+<line class="ll" x1="1058" y1="88" x2="1058" y2="700"/>
+<line class="ll" x1="1215" y1="88" x2="1215" y2="700"/>
+
+<rect class="act" x="100" y="120" width="10" height="545"/>
+<rect class="act" x="425" y="120" width="10" height="415"/>
+<rect class="act" x="585" y="152" width="10" height="24"/>
+<rect class="act" x="740" y="228" width="10" height="22"/>
+<rect class="act" x="740" y="440" width="10" height="22"/>
+<rect class="act" x="895" y="272" width="10" height="22"/>
+<rect class="act" x="1053" y="395" width="10" height="22"/>
+<rect class="act" x="260" y="565" width="10" height="60"/>
+<rect class="act" x="1210" y="595" width="10" height="70"/>
+
+<line class="m" x1="115" y1="120" x2="423" y2="120" marker-end="url(#s3)"/>
+<text class="l" x="269" y="114">12. recommend(call, eligibleAmbulances)</text>
+
+<line class="ma" x1="435" y1="152" x2="583" y2="152" marker-end="url(#s3a)"/>
+<text class="la" x="509" y="146">13. getLocation()</text>
+<line class="ra" x1="583" y1="172" x2="437" y2="172" marker-end="url(#o3a)"/>
+<text class="la" x="509" y="167">callLocation</text>
+<text class="g" x="600" y="172">hoisted out of the loop — the emergency does not move</text>
+
+<rect class="fragn" x="390" y="192" width="600" height="112" rx="2"/>
+<path class="ftn" d="M390 192 h60 v13 l-9 9 H390 z"/>
+<text class="fln" x="398" y="204">loop</text>
+<text class="gn" x="456" y="204">[ stage 1 — for each eligible Ambulance ]</text>
+
+<line class="m" x1="435" y1="228" x2="738" y2="228" marker-end="url(#s3)"/>
+<text class="l" x="586" y="222">14. getLocation()</text>
+<line class="ra" x1="738" y1="248" x2="437" y2="248" marker-end="url(#o3a)"/>
+<text class="la" x="586" y="243">Location</text>
+
+<line class="m" x1="435" y1="272" x2="893" y2="272" marker-end="url(#s3)"/>
+<text class="l" x="664" y="266">15. distanceTo(callLocation)</text>
+<line class="ra" x1="893" y1="292" x2="437" y2="292" marker-end="url(#o3a)"/>
+<text class="la" x="664" y="287">double — straight line, heuristic only</text>
+
+<path class="ma" d="M435 322 h44 v22 h-42" marker-end="url(#s3a)"/>
+<text class="la" x="490" y="327" text-anchor="start">16. shortlist(k)</text>
+<text class="g" x="490" y="343">haversine is an admissible lower bound on road distance, so a bounded shortlist cannot drop the true winner</text>
+
+<rect class="frag" x="390" y="362" width="760" height="116" rx="2"/>
+<path class="ft" d="M390 362 h60 v13 l-9 9 H390 z"/>
+<text class="fl" x="398" y="374">loop</text>
+<text class="g" x="456" y="374">[ stage 2 — for each shortlisted Ambulance ]</text>
+
+<line class="ma" x1="435" y1="398" x2="1051" y2="398" marker-end="url(#s3a)"/>
+<text class="la" x="743" y="392">17. estimate(ambulanceLocation, callLocation)</text>
+<line class="ra" x1="1051" y1="418" x2="437" y2="418" marker-end="url(#o3a)"/>
+<text class="la" x="743" y="413">TravelEstimate  (road distance + ETA)</text>
+
+<line class="m" x1="435" y1="443" x2="738" y2="443" marker-end="url(#s3)"/>
+<text class="l" x="586" y="437">18. getAvailableSince()</text>
+<line class="ra" x1="738" y1="463" x2="437" y2="463" marker-end="url(#o3a)"/>
+<text class="la" x="586" y="458">Instant</text>
+
+<path class="ma" d="M435 498 h44 v22 h-42" marker-end="url(#s3a)"/>
+<text class="la" x="490" y="503" text-anchor="start">19. rank(candidates)  «AmbulanceRankingComparator»</text>
+<text class="g" x="490" y="519">criteria made explicit: ETA primary, availableSince tiebreak — mirrors EmergencyCallComparator</text>
+
+<line class="ra" x1="423" y1="548" x2="117" y2="548" marker-end="url(#o3a)"/>
+<text class="la" x="270" y="542">20. List&lt;RankedCandidate&gt;</text>
+<text class="g" x="440" y="548">ranked list, not one winner — the tail is what ALT 5A needs</text>
+
+<line class="ma" x1="115" y1="578" x2="258" y2="578" marker-end="url(#s3a)"/>
+<text class="la" x="186" y="572">21. createRecommendation(</text>
+<text class="la" x="186" y="592">call, rankedCandidates)</text>
+
+<line class="ma" x1="275" y1="612" x2="1208" y2="612" marker-end="url(#s3a)"/>
+<text class="la" x="740" y="606">22. «create»  head = recommendedAmbulance, tail = alternatives, travelEstimate populated</text>
+<line class="ra" x1="1208" y1="634" x2="117" y2="634" marker-end="url(#o3a)"/>
+<text class="la" x="660" y="629">DispatchRecommendation</text>
+
+<line class="m" x1="115" y1="658" x2="1208" y2="658" marker-end="url(#s3)"/>
+<text class="l" x="660" y="652">23. getRecommendationId()</text>
+
+<rect class="warn" x="640" y="192" width="350" height="42" rx="4"/>
+<text class="g" x="652" y="207" font-weight="700">REMOVED: assignTo(call)</text>
+<text class="g" x="652" y="220">v1 drew it inside this loop. It mutates Ambulance state</text>
+<text class="g" x="652" y="230">during pure ranking. It belongs in STEP 7 only.</text>
+
+<rect class="note" x="14" y="716" width="1276" height="110" rx="4"/>
+<text class="nt" x="26" y="734" font-weight="700" fill="#1f1f1d">What changed</text>
+<text class="nt" x="26" y="750">1  assignTo(call) removed. Ranking must not mutate. Its presence in v1 already falsifies the "no state changes before STEP 7" guarantee the optimization doc asserts.</text>
+<text class="nt" x="26" y="764">2  AmbulanceCall.getLocation() hoisted — it was loop-invariant. Correct in principle, negligible in time; do it for clarity, not speed.</text>
+<text class="nt" x="26" y="778">3  TravelEstimateProvider now actually appears. Your class spec declares it as a field of CadRecommendationService and gives DispatchRecommendation a travelEstimate field —</text>
+<text class="nt" x="26" y="790">     but createRecommendation(call, bestAmbulance) takes two arguments, so that field was never populated. getTravelEstimate() returned null and STEP 4 had no ETA to display.</text>
+<text class="nt" x="26" y="804">4  Two-stage ranking keeps the external routing calls down to k instead of one per eligible unit. 5  The ranking rule is now a named comparator instead of four unexplained getters.</text>
+<text class="nt" x="26" y="818">6  recommend() returns the ranking instead of discarding it — v1 computed scores for every candidate, returned one ambulance, then asked the dispatcher to override from an unranked list.</text>
+
+</svg>

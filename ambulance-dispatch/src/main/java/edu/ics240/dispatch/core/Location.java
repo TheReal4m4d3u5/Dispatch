@@ -1,98 +1,38 @@
 package edu.ics240.dispatch.core;
 
-import java.util.Objects;
-
 /**
- * Immutable two-dimensional location used by the ambulance
- * dispatch simulator.
- *
- * A real ambulance system would use GPS coordinates and road-network
- * travel time. This project uses Euclidean distance so the dispatch
- * algorithm remains deterministic and focused on data structures.
+ * Value object representing a geographic location.
+ * Used by Step 3 for distance and ETA calculations.
  */
 public final class Location {
 
-    private final double x;
-    private final double y;
+    private final double latitude;
+    private final double longitude;
 
-    public Location(double x, double y) {
-        validateCoordinate(x, "x");
-        validateCoordinate(y, "y");
-
-        this.x = x;
-        this.y = y;
+    public Location(double latitude, double longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
-    public double getX() {
-        return x;
-    }
-
-    public double getY() {
-        return y;
-    }
+    public double latitude() { return latitude; }
+    public double longitude() { return longitude; }
 
     /**
-     * Calculates squared Euclidean distance.
-     *
-     * Squared distance is useful when comparing ambulance locations
-     * because it avoids performing a square-root calculation for
-     * every candidate.
-     */
-    public double squaredDistanceTo(Location other) {
-        Objects.requireNonNull(
-                other,
-                "Other location cannot be null"
-        );
-
-        double deltaX = x - other.x;
-        double deltaY = y - other.y;
-
-        return deltaX * deltaX + deltaY * deltaY;
-    }
-
-    /**
-     * Calculates ordinary Euclidean distance.
+     * Haversine distance in kilometers.
+     * Step 3 uses this as a lower bound heuristic for road distance.
      */
     public double distanceTo(Location other) {
-        return Math.sqrt(squaredDistanceTo(other));
-    }
+        double R = 6371.0; // Earth radius in km
+        double latRad1 = Math.toRadians(this.latitude);
+        double latRad2 = Math.toRadians(other.latitude);
+        double dLat = Math.toRadians(other.latitude - this.latitude);
+        double dLon = Math.toRadians(other.longitude - this.longitude);
 
-    private static void validateCoordinate(
-            double coordinate,
-            String coordinateName) {
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(latRad1) * Math.cos(latRad2)
+                * Math.sin(dLon / 2) * Math.sin(dLon / 2);
 
-        if (!Double.isFinite(coordinate)) {
-            throw new IllegalArgumentException(
-                    coordinateName
-                            + " coordinate must be a finite number"
-            );
-        }
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (this == other) {
-            return true;
-        }
-
-        if (!(other instanceof Location location)) {
-            return false;
-        }
-
-        return Double.compare(x, location.x) == 0
-                && Double.compare(y, location.y) == 0;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(x, y);
-    }
-
-    @Override
-    public String toString() {
-        return "Location{"
-                + "x=" + x
-                + ", y=" + y
-                + '}';
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
     }
 }

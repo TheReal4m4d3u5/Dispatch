@@ -1,41 +1,15 @@
 package edu.ics240.dispatch.core;
 
 /**
- * Represents the operational lifecycle state of an ambulance.
- *
- * Only AVAILABLE ambulances may be assigned to emergency calls.
+ * High-level lifecycle of an ambulance.
+ * This is used by isDispatchable() and state transitions in Steps 2, 7, 9.
  */
 public enum AmbulanceStatus {
-
-    AVAILABLE(true, false),
-
-    DISPATCHED(false, true),
-    ON_SCENE(false, true),
-    TRANSPORTING(false, true),
-    AT_HOSPITAL(false, true),
-
-    RETURNING_TO_SERVICE(false, false),
-    CLEANING_AND_RESTOCKING(false, false),
-    MAINTENANCE(false, false),
-    UNSTAFFED(false, false),
-    OUT_OF_SERVICE(false, false);
-
-    private final boolean dispatchable;
-    private final boolean activeCall;
-
-    AmbulanceStatus(
-            boolean dispatchable,
-            boolean activeCall) {
-
-        this.dispatchable = dispatchable;
-        this.activeCall = activeCall;
-    }
-
-    public boolean isDispatchable() {
-        return dispatchable;
-    }
-
-    public boolean hasActiveCall() {
-        return activeCall;
-    }
+    AVAILABLE,      // can be dispatched
+    DISPATCHED,     // assigned to a call, en route or on scene
+    EN_ROUTE,       // responding to the scene
+    ON_SCENE,       // at the emergency location
+    TRANSPORTING,   // moving patient to hospital
+    RETURNING,      // heading back to service area
+    OUT_OF_SERVICE  // maintenance, unstaffed, etc.
 }
