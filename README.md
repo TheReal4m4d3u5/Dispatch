@@ -139,7 +139,8 @@ All use cases are broken down into behaviors allocated to domain entities. All u
 
 ![alt text](image.png)
 
-![alt text](image-1.png)
+<img width="616" height="556" alt="image" src="https://github.com/user-attachments/assets/5c145243-e211-4bb6-8ad6-9c94ff0a6d99" />
+
 
 
 
