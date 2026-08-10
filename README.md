@@ -154,7 +154,7 @@ All use cases are broken down into behaviros alocated to domain enties. All use 
 
 
 ## Sequence Diagram
-
+![alt text](image-12.png)
 
 ![alt text](image-5.png)
 
@@ -162,6 +162,13 @@ All use cases are broken down into behaviros alocated to domain enties. All use 
 
 ![alt text](image-4.png)
 
+
+
+![alt text](image-16.png)
+![alt text](image-14.png)
+![alt text](image-15.png)
+
+![alt text](image-13.png)
 
 ### Classes
 
