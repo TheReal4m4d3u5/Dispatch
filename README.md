@@ -158,9 +158,10 @@ All use cases are broken down into behaviros alocated to domain enties. All use 
 
 ![alt text](image-5.png)
 
-![alt text](image-10.png)
+<img width="1567" height="806" alt="image" src="https://github.com/user-attachments/assets/4cb1edf5-2161-4579-a640-7ef936ed060f" />
 
-![alt text](image-4.png)
+
+
 
 
 
