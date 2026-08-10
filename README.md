@@ -12,9 +12,22 @@ This project demonstrates three things — Spring Boot MVC architecture, the Fac
 
 ## Problem
 
-People need to call for an ambulance and get medical help to go to the hospital. The call center needs to be able to dispatch ambulences or request other government services. 
-Dispatch needs to be able to allocate emergency tickets out to ambulances. Ambulances must accept the emergecy. Emergecy tickets are put into a priority queue.   
+People need to call for an ambulance and get medical help to go to the hospital. The call center needs to be able to dispatch ambulances or request other government services. 
+Dispatch needs to be able to allocate emergency tickets out to ambulances. Ambulances must accept the emergency. Emergency tickets are put into a priority queue.   
 
+## Problem
+
+An ambulance call center takes an unstructured emergency report and must turn it into two things in quick succession: a vetted, prioritized record, and a committed allocation of a resource there is never enough of. Demand is not smooth, and at peak there are more emergency calls waiting than there are ambulances free to take them. Everything difficult about this problem follows from that gap.
+
+Triage comes before allocation. Not every emergency call needs an ambulance — some incidents belong to police or fire, some require several agencies at once, and some are a second report of an emergency already being handled. Committing a unit to any of those takes it away from a patient who needs it, so the call center has to be able to hand an emergency call to another service instead of absorbing it.
+
+Waiting emergency calls cannot be served in the order they arrive. Clinical severity decides who goes next: a cardiac arrest reported a minute ago outranks a routine transport reported an hour ago. Arrival order still matters, but one level down — between two emergency calls of equal severity, the caller who has waited longer has the stronger claim. The queue has to express both rules at once, triage across severity and first-come-first-served within it, and a design that captures only one of them is wrong in a way that shows up in outcomes.
+
+Choosing the ambulance is a decision, not a calculation. The system can narrow the field — a unit must be available, staffed, within jurisdiction, and equipped for the level of care required — and it can rank whatever survives that filter by estimated time of arrival. What it cannot do is choose. That authority belongs to the dispatcher, who must be able to override the recommendation, and whose reason for overriding has to be captured, because those decisions are reviewed after the fact.
+
+An assignment is not a response until a crew accepts it. A dispatch that was transmitted but never acknowledged is the most dangerous failure in the system, because it resembles success: the record shows the emergency call as handled while no one is actually moving. Responsibility stays with the call center until acceptance is confirmed, and a crew must be able to decline an assignment and return the emergency call to the queue.
+
+Underneath all of it, supervisors need to move units in and out of service without disturbing dispatches already under way, and every completed dispatch has to leave a record that will hold up to review.
 
 
 ## Project Objectives
