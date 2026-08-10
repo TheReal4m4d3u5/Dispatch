@@ -160,7 +160,7 @@ All use cases are broken down into behaviros alocated to domain enties. All use 
 
 ![alt text](image-10.png)
 
-![alt text](image-4.png)
+
 
 
 ### Classes
