@@ -156,7 +156,9 @@ All use cases are broken down into behaviors allocated to domain entities. All u
 
 <img width="1542" height="462" alt="image" src="https://github.com/user-attachments/assets/0a657528-725e-4dbe-b2e7-74b8793cdf6f" />
 
+<img width="1555" height="264" alt="image" src="https://github.com/user-attachments/assets/bf330d6a-6007-4097-b4ba-782f28896446" />
 
+<img width="1560" height="515" alt="image" src="https://github.com/user-attachments/assets/ebf7d307-786a-4069-8514-2040ea6335fb" />
 
 
 ### Classes
