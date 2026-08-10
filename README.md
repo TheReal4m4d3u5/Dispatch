@@ -160,9 +160,9 @@ All use cases are broken down into behaviors allocated to domain entities. All u
 
 <img width="1560" height="515" alt="image" src="https://github.com/user-attachments/assets/ebf7d307-786a-4069-8514-2040ea6335fb" />
 
-<img width="1507" height="111" alt="image" src="https://github.com/user-attachments/assets/30590ee3-2408-419a-be71-06a67bbec41c" />
+<img width="1283" height="143" alt="image" src="https://github.com/user-attachments/assets/d195157c-962c-4f20-b9d3-18c4d3c150fa" />
 
-<img width="1519" height="440" alt="image" src="https://github.com/user-attachments/assets/871b6894-e904-409a-9433-1a1be75c0469" />
+<img width="1329" height="131" alt="image" src="https://github.com/user-attachments/assets/86670f09-e456-4b95-be7b-1f99f4552424" />
 
 
 ### Classes
