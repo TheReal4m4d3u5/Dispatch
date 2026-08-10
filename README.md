@@ -5,15 +5,7 @@
 ![React](https://img.shields.io/badge/React-19-blue.svg)
 
 ## Description
-
-This is an ambulance dispatch service. Emergenciy call need to be vetted, submmited and allocated. Ambulences are assigned when they are available. This deminstrates a computer-aided dispatch(CAD) system
-for an ambulance call center. 
-
-
-Backend is build out in spring boot and front end uses react. System use MVC architecure, a facade design pattern, and priority queue. 
-
-
-Every use case is decomposed into behaviors, each behavior is allocated to the domain entity that owns the relevant data, and each allocated behavior is traced through sequence diagrams to a BDD scenario and a unit test.
+This project demonstrates three things — Spring Boot MVC architecture, the Facade design pattern, and a priority queue — implemented as a computer-aided dispatch (CAD) system for an ambulance call center. 
 
 
 
