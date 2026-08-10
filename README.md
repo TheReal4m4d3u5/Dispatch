@@ -160,7 +160,7 @@ All use cases are broken down into behaviors allocated to domain entities. All u
 
 <img width="1560" height="515" alt="image" src="https://github.com/user-attachments/assets/ebf7d307-786a-4069-8514-2040ea6335fb" />
 
-
+x
 ### Classes
 
 
