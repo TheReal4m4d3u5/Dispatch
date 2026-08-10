@@ -146,8 +146,7 @@ All use cases are broken down into behaviors allocated to domain entities. All u
 
 ## Robustness Analysis
 
-<img width="1444" height="824" alt="image" src="https://github.com/user-attachments/assets/251ff933-663e-4c8c-8e1f-6bef68b91522" />
-
+<img width="1386" height="810" alt="image" src="https://github.com/user-attachments/assets/fa3875ee-efc4-4e25-a13e-15589facf6ef" />
 
 
 ## Sequence Diagram
