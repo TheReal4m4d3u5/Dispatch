@@ -376,11 +376,11 @@ Rainy day
 Zero
 One
 Many
-Bounary behaviors
+Boundary behaviors / Edge cases 
 Interface definitions
 Exerise exceptional behavior 
 Negative test cases
-Edge cases 
+
 
 
 
